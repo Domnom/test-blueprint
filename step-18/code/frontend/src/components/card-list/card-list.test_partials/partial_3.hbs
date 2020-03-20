@@ -1,0 +1,22 @@
+        it ("Should catch the required listId prop", () => {
+
+            const expectedProps = {
+                name : "card name"
+            }
+            const propErrors = checkProps(CardList, expectedProps);
+
+            expect(propErrors).toBeDefined();
+
+        });
+
+        it ("Should catch the required name prop", () => {
+
+            const expectedProps = {
+                listId : 1
+            }
+            const propErrors = checkProps(CardList, expectedProps);
+
+            expect(propErrors).toBeDefined();
+
+        });
+
