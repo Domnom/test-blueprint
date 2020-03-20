@@ -1,0 +1,32 @@
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+/**
+ * @import Recipes
+ */
+import { SwaggerUtil } from 'src/common/recipes/swagger/swagger.util';
+
+/**
+ * @imoprt Interceptors
+ */
+import { ErrorHandlingInterceptor } from './common/interceptors/error-handling.interceptor';
+import { ValidationPipe } from '@nestjs/common';
+import { ValidationError } from 'class-validator';
+
+
+async function bootstrap() {
+    const app = await NestFactory.create(AppModule);
+
+    // -- Cors
+    app.enableCors();
+
+    // -- Utils
+    SwaggerUtil.buildSwagger(app);
+    
+    // -- Interceptors
+    app.useGlobalInterceptors(new ErrorHandlingInterceptor());
+
+    // -- Boot the app
+    await app.listen(process.env.PORT ? process.env.PORT : 6001)
+}
+bootstrap();
