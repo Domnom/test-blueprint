@@ -1,0 +1,36 @@
+/** 
+ * @class Board Styles 
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+
+.boardComponent {
+    width: 100%;
+    height: 100%;
+}
+
+    .boardComponent > .boardName {
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 32px;
+        white-space: nowrap;
+        padding: 8px 0px;
+    }
+
+    .boardComponent > .cardListContainer {
+        position: absolute;
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        width: 100%;
+        height: 100%;
+
+        display:flex;
+    }
+
+        .boardComponent > .cardListContainer > .cardListComponent {
+            margin-right: 8px;
+            height: max-content;
+        }
