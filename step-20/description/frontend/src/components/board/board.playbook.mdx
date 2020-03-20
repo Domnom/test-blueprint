@@ -1,0 +1,138 @@
+# board Component (Scene for a visual component)
+Holds a bunch of CardList components
+
+### What we are working on
+
+We already have the lists saving their positions but the cards still revert to the original position.
+Because we have both `CardList` and `Card` components as draggable objects we may have conflicting id's
+( eg list = id 1, card = id 1) If both the draggables have the same `draggableId` then we will have a bad time and all things
+will go wrong so to correct this, lets append a namespace to the id (eg list = list-1, card = card-1) and that should ensure
+we have no conflicting draggables
+
+We have implemented from 1, 2, 3.1, 3.2; We now need to implement 3.3 onwards
+
+1. Use getDerivedStateFromProps (built in react function) to create a state that has the ordered listsData
+2. Lets define the `DragDropContext` property `onDragEnd` to handle the rules when a `Draggable` is dropped into any `Droppable`. Note this will also fire when we drag
+   `Cards` into `CardList` so we will need to use the `Draggable` property `type` to differentiate between the draggable types
+3. With the `onDragEnd` we will be given the properties `{ draggableId, source, destination, type }`. Basically, we will be told the draggable we just moved and the index (array index)
+   we are trying to fit into. This has not modified the real state `listsData` so we will need do the following things
+    1. Change path depending on the `type` (COLUMN or Else)
+    2. if `COLUMN`
+        1. Clone `this.state.listsData` to a new array object
+        2. Using `draggableId` search for the list that we moved
+        3. If `destination.index === 0`
+            1. We are dragging to the start. Fetch the original `destination.index` from `this.state.listsData` clone and get its position.
+               We will be generating a new position using the lexicographic util `generatePosition(null, {original0thPosition})`
+        4. Else if `destination.index === this.state.listsData.length - 1`
+            1. We are dragging to the end. Fetch the original `destination.index` and generate a position after it using the
+               lexicographic function `generatePosition({originalEndPosition}, null)`
+        5. Else 
+            1. We are in the middle of 2 lists. Get the start list by using `this.state.listsData[destination.index - 1]` and
+               the end list by using `this.state.listsData[destination.index]` and generate a new position with the lexicographic
+               function `generatePosition({startList.position}, {endList.position})`
+        6. Once this is done, save the state by using `this.setState({ listsData: listsData })` and render should correctly save the positions
+    3. if `DEFAULT`
+        1. Clone `this.state.listsData` to a new array object
+        2. Using `source.droppableId` get the list the card exists in. Let's call this `listDataSource`
+        3. Get the card by using `listDataSource.cards[source.index]`. Let's call this `cardDataDropped`
+        4. The `cardDataDropped` can either be repositioned in the same `listData` OR it could have been moved to a new `listData` so:
+        5. If `source.droppableId != destination.droppableId`
+            1. The `Card` has moved to a new `CardList` so we will need to find a new position and remove the `cardData` from the `listDataSource`
+            2. First remove the `source.index` from the `listDataSource.cards` using `Array.splice({source.index}, 1)`
+            3. Use `destination.droppableId` to get the list we need to add our `cardDataDropped` to. Let's called this `listDataDestination`
+            4. If `!listDataDestination.cards || listDataDestination.cards.length === 0`
+                1. There are no cards in the destination! Ensure that there is a cards property ready to fill in. If not then initialize a cards property by `listDataDestination.cards = []`
+                2. All we need to do is `generatePosition()` for the `cardDataDropped` and add it using `listDataDestination.cards.push(cardDataDropped)`
+            5. If `destination.index === 0`
+                1. Dragging to the start. Fetch original card at `destination.index` from `listDataDestination.cards` and get its position value.
+                   We will generate a new position with the lexicographic util `generatePosition(null, {original0thPosition})`
+            6. Else if `destination.index === listDataDestination.cards.length` *(do not use -1 as the `cardDataDropped` has not yet been added!)*
+                1. We are dragging to the end. Fetch the original `destination.index - 1` and generate a position after it using
+                   the lexicographic util `generatePosition({lastCardPosition}, null)`
+            7. Else
+                1. We are in the middle of 2 cards. Get the start card by using `listDataDestination.cards[destination.index - 1]`. Lets call this `cardStart`
+                   Also get the end card by using `listDataDestination.cards[destination.index]`. Let's call this `cardEnd`.
+                   Using both these cards, generate a new position with the lexicographic util `generatePosition(cardStart.position, cardEnd.position)`
+            8. Our `cardDataDropped` should now have the correct position so lets add it to the array by using `listDataDestination.cards.push(cardDataDropped)`
+        6. Else
+            1. The `Card` has a new position in the same `CardList`
+            2. If `destination.index === 0`
+                1. Dragging to the start. Fetch original card at `destination.index` from `listDataSource.cards` and get its position value.
+                   Generate a new position with the lexicographic util `generatePosition(null, {original0thPosition})`
+            3. Else if `destination.index === listDataSource.cards.length - 1`
+                1. We are dragging to the end. Fetch the original `destination.index - 1` and generate a position after it using
+                   the lexicographic util `generatePosition({lastCardPosition}, null)`
+            4. Else
+                1. We are in the middle of 2 cards. Get the start card by using `listDataSource.cards[destinationIndex - 1]`. Let's call this `cardStart`
+                   Also get the the end card by using `listDataSource.cards[destinationIndex]`. Let's call this `cardEnd`.
+                   Using both these cards, generate a new position with the lexicographic util `generatePosition(cardStart.position, cardEnd.position)`
+        7. Before we save, lets run a sort over the cards to ensure they are in the correct order for rendering. We could handle the re-sort in the respective `CardList` but
+           because the `onDragEnd` handler is in the board then we will need to have the data already prepared
+        8. Finally, save the state using `setState`
+
+
+## Steps 
+### Wireframe/Design 
+* Design 
+*  
+
+### Component 
+#### Structure
+The board should contain a name and a container that can hold a bunch of card lists
+
+* Component
+    * Board name
+    * DragDropContext
+        * Droppable
+            * CardList container
+                * Draggable
+                    * <card-list.component.tsx\>
+                * Draggable
+                    * ...
+                * Draggable
+                    * <card-list.component.tsx\>
+
+
+***
+
+### Story 
+We should have a single board component that has dynamic props which are editable using storybook knobs
+
+The card lists should also be moveable and should only land within the card list container
+
+***
+
+### Unit Test
+* We will add a proptypes unit test to the Board component
+    * name
+    * listsData
+
+* The listsData prop should be an optional prop
+
+* The lists data should be an array that contains an object with the following keys
+    * id
+    * position (generated by lexicographic util)
+    * name
+    * cards (array)
+        * id
+        * name
+
+* Test what we should render when the listsData that is passed in is
+    * Valid - Print the list to the screen
+    * Invalid - Skip the list with invalid data
+    * Mixed - Print valid and skip invalid
+    
+
+***
+
+### BDD Test 
+* When we load the Board to the screen,
+We will see the board name and
+We will see 2 card lists and
+Each list will have 2 cards each
+
+    Given I have a Board
+    When I look at it
+    Then I should see the name of the board
+    And I should see 2 card lists with the names of 'List 1' and 'List 2'
+    And 2 Cards on each list with the names of 'Card 1', 'Card 2', 'Card 3' and 'Card 4'
