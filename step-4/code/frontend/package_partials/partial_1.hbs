@@ -1,0 +1,86 @@
+    "name": "master-class-trello-clone",
+    "version": "1.0.0",
+    "description": "MasterClass Trello Clone monorepo",
+    "main": "index.js",
+    "scripts": {
+        "-- @name build": "--- @description ",
+        "build:dev": "clear && webpack --config webpack.dev.js",
+        "build:prod": "clear && webpack --config webpack.prod.js",
+        "start:dev": "clear && webpack-dev-server --open --hot --config webpack.dev.js",
+        "-- @name story": "--- @description ",
+        "story": "clear && start-storybook -p 6006",
+        "story:build": "clear && build-storybook -c .storybook -o docs/storybook",
+        "story:publish": "clear && yarn run story:build && cd docs/storybook && surge projectname-story.surge.sh",
+        "-- @name test": "--- @description ",
+        "test:unit": "echo \"Setup tests\"",
+        "test:e2e": "echo \"Setup tests\"",
+        "test": "yarn run test:unit && yarn run test:e2e",
+        "-- @name sxd": "--- @description ",
+        "sxd:component": "../setup/sxd/component.sh"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mitni455/master-class-trello-clone.git"
+    },
+    "keywords": [
+        "reactjs",
+        "nestjs",
+        "docker",
+        "nginx",
+        "lerna"
+    ],
+    "author": "Nick Mitchell",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/mitni455/master-class-trello-clone/issues"
+    },
+    "homepage": "https://github.com/mitni455/master-class-trello-clone#readme",
+    "devDependencies": {
+        "@storybook/addon-actions": "^5.2.5",
+        "@storybook/addon-info": "^5.2.5",
+        "@storybook/addon-knobs": "^5.2.5",
+        "@storybook/addon-links": "^5.2.5",
+        "@storybook/addon-notes": "^5.2.5",
+        "@storybook/addons": "^5.2.5",
+        "@storybook/react": "^5.2.5",
+        "@types/prop-types": "^15.7.3",
+        "@types/react": "^16.9.11",
+        "@types/react-dom": "^16.9.4",
+        "@types/storybook__react": "^4.0.2",
+        "awesome-typescript-loader": "^5.2.1",
+        "babel-loader": "^8.0.6",
+        "babel-polyfill": "^6.26.0",
+        "copy-webpack-plugin": "^5.0.5",
+        "css-loader": "^3.2.0",
+        "cz-conventional-changelog": "3.0.2",
+        "html-webpack-plugin": "^3.2.0",
+        "husky": "^3.0.9",
+        "loader-utils": "^1.2.3",
+        "react-docgen-typescript-loader": "^3.3.0",
+        "source-map-loader": "^0.2.4",
+        "style-loader": "^1.0.0",
+        "ts-loader": "^6.2.1",
+        "typescript": "^3.7.2",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.10",
+        "webpack-dev-server": "^3.9.0",
+        "webpack-merge": "^4.2.2"
+    },
+    "config": {
+        "commitizen": {
+            "path": "./node_modules/cz-conventional-changelog"
+        }
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "npm test",
+            "pre-push": "npm test",
+            "--prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+        }
+    },
+    "dependencies": {
+        "prop-types": "^15.7.2",
+        "react": "^16.11.0",
+        "react-dnd": "^9.4.0",
+        "react-dnd-html5-backend": "^9.4.0",
+        "react-dom": "^16.11.0"
