@@ -1,0 +1,7 @@
+     * @description An object that contains the CardList droppableId (which should be in the format of list-{id})
+     *              that points to the instance of <CardList>. This could prove useful to fetch the index position of a
+     *              Card in the CardList when we drag and drop cards
+     */
+    private cardListRefsByDroppableId: { [droppableId: string]: React.RefObject<any> } = {};
+
+    /**
