@@ -1,0 +1,7 @@
+
+            /**
+             * @description Finally re-sort the state as the static getDerivedStateFromProps will not fire for state changes
+             */
+            listsDataCloned = listsDataCloned.sort((listDataA: TListData, listDataB: TListData): number => {
+                return listDataA.position.localeCompare(listDataB.position);
+            });
