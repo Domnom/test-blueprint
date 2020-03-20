@@ -1,0 +1,470 @@
+/**
+* @component Playbook SDK 
+* @description create playbook json like a storybook
+* @filename playbook.sdk.js
+**/
+
+
+/**
+* @imports Files
+* @description Files reading 
+**/
+const path = require('path');
+const fs = require('fs');
+const PATH_TO_FOLDER = '../../tutorials/react/hello-world-gatsby/src/pages/04_react/';
+const PATH_TO_HELLOWORLD = PATH_TO_FOLDER+'01_hello_world/';
+const PATH_TO_TICTACTOE = PATH_TO_FOLDER+'02_tictactoe/';
+
+/**
+* @imports JSDOM
+* @description NodeJs Document Object Model
+**/
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+const html = `<html><body></body></html>`;
+
+const document = new JSDOM(html).window.document;
+global.document = document;
+
+
+/**
+* @imports  Showdown
+* @description Markdown to HTML
+**/
+const showdown  = require('showdown'),
+convertMdToHtml = new showdown.Converter();
+
+/**
+* @imports  MDX 
+* @description MDX to HTML
+**/
+// const mdx = require('@mdx-js/mdx')
+
+
+/**
+* @method md2Html
+* @description Markdown to HTML wrapper
+* @param {string} markdown - markdown string
+* @returns {string} html - html converted
+**/    
+function md2html(markdown) {
+	var html = convertMdToHtml.makeHtml(markdown);
+	console.log('html -->\n', html);
+	
+	return html;
+}
+
+
+const DEFAULTS = {
+	start: 'next',
+	duration: 5000
+}
+
+
+function htmlToList(dom, parentModel){
+
+	/*
+	console.log('-------------------');
+	console.log('dom', dom.nodeName);
+	console.log('parentModel', parentModel);
+	*/
+
+	var models = [];
+
+	for(var i = 0; i < dom.children.length; i++){
+		
+		var model = {}
+
+		var child = dom.children[i];
+		model.tag = child.nodeName.toLowerCase();
+		model.txt = child.textContent;
+		
+		if(child.children.length > 0){
+			model.kids = []; 
+			
+			
+			htmlToList(child, model);
+		}
+
+		models.push(model);
+	
+	}
+
+	if(parentModel && parentModel.kids) parentModel.kids = models;
+
+	return parentModel || models;
+}
+
+class PlaybookSdk{
+	constructor(name){
+		this.nextId = 1; 
+		this.name = name;
+		this.playbookJson = {};
+
+		this.last = {
+			category: null,
+			scene: null,
+			step: null,
+			timeline: null, 
+
+			operation: null
+		}
+	}
+	addConfig(config){
+		this.playbookJson = {
+			config: config
+		}
+		return this;
+	}
+	addCategory(title){
+		if( !this.playbookJson.hasOwnProperty('categories') ){
+			this.playbookJson.categories = [];
+		}
+
+		const id = this.nextId++;
+
+		this.playbookJson.categories.push({
+			id: id, 
+			title: title, 
+			scenes: []
+		});
+
+		this.last.category = id; 
+		
+		return this;
+	}
+	addScene(title){
+
+		const category = this.playbookJson.categories.find(cat => cat.id === this.last.category);
+
+		if( !category.hasOwnProperty('scenes') ){
+			category.scenes = [];
+		}
+
+		const id = this.nextId++;
+		
+		category.scenes.push({
+			id: id, 
+			title: title, 
+			steps: []
+		});
+
+		this.last.scene = id; 
+		
+		return this;
+	}
+	addStep(title, gitBranch){
+
+		const category = this.playbookJson.categories.find(cat => cat.id === this.last.category);
+		const scene = category.scenes.find(scene => scene.id === this.last.scene);
+
+		if(!scene.hasOwnProperty('steps')){
+			scene.steps = [];
+		}
+
+		const id = this.nextId++;
+
+		scene.steps.push({
+			id: id, 
+			title : title,
+			gitData : {
+				branch : gitBranch
+			},
+			timeline: []
+		});
+
+		this.last.step = id; 
+
+		return this;
+	}
+	addDescriptionFromMd(markdownFn, config){
+		var markdown = markdownFn();
+		var html = md2html(markdown);
+		return this.addDescription(html, config);
+	}
+	addDescriptionFromMdFile(markdownFile, config){
+		const markdown = fs.readFileSync(markdownFile, 'utf8');
+		var html = md2html(markdown);
+		return this.addDescription(html, config);
+	}
+	addDescription(fnOrStringOrDomOrReact, config){
+
+		const category = this.playbookJson.categories.find(cat => cat.id === this.last.category);
+		const scene = category.scenes.find(scene => scene.id === this.last.scene);
+		const step = scene.steps.find(step => step.id === this.last.step);
+
+
+		let strHtml;
+
+		switch(typeof(fnOrStringOrDomOrReact)){
+			case 'string':
+				strHtml = fnOrStringOrDomOrReact;
+				break;
+			case 'function':
+				strHtml = fnOrStringOrDomOrReact();
+				break;
+			case 'object': 
+				if(fnOrStringOrDomOrReact instanceof HTMLElement){
+					strHtml = fnOrStringOrDomOrReact.outerHTML;
+				}
+				break;
+		}
+
+		// const doc = new DOMParser().parseFromString(strHtml, "text/xml");
+		// const dom = doc.firstElementChild;
+
+		const wrapper= document.createElement('div');
+		wrapper.innerHTML= strHtml;
+
+		const descriptionJson = htmlToList(wrapper);
+
+		const id = this.nextId++;
+
+		step.timeline.push({
+			id: id, 
+			"panel": "description", 
+			"start": DEFAULTS.start,
+			"duration": DEFAULTS.duration,
+			"description": descriptionJson
+		});
+
+		this.last.timeline = id;
+
+		return this;
+	}
+	withTime(config){
+
+		const category = this.playbookJson.categories.find(cat => cat.id === this.last.category);
+		const scene = category.scenes.find(scene => scene.id === this.last.scene);
+		const step = scene.steps.find(step => step.id === this.last.step);
+		const time = step.timeline.find(time => time.id === this.last.timeline);
+
+		time.start = config.start;
+		time.duration = config.duration;
+
+		return this;
+	}
+	print(){
+		console.log(this.playbookJson);
+
+		return JSON.stringify(this.playbookJson, 0, 4);
+	}
+	write(optionalFilename){
+		if(!optionalFilename) optionalFilename = 'playbook.json';
+		fs.writeFileSync('./'+optionalFilename, this.print(), 'utf8');
+
+		const playbookFile = fs.readFileSync('./'+optionalFilename, 'utf8');
+		console.log('playbookFile:\n', playbookFile);
+	}
+}
+
+function playbook(name) {
+	return new PlaybookSdk();
+}
+
+
+
+
+/**
+* @method Run Time
+* @description Runner
+* @param {} name - desc
+* @returns {} name - desc
+* @throws {} name - desc
+* @todo todo
+**/
+playbook('Hello World')
+	.addConfig("cli": {
+		"use": "rastasheep/ubuntu-sshd:14.04",
+		"as": "@ubuntu",
+		"isDefault": true,
+		"// @description": "default - optional to switch between different environments"
+	})
+	/**
+	* @category React 
+	* 01_hello_world
+	**/
+	.addCategory('React')
+		.addScene('Setting up React')
+			.addStep('Install your Apps', '/feature/branch')
+				.addDescriptionFromMd(()=>{
+					return fs.readFileSync(PATH_TO_HELLOWORLD + '01_hello_world/01.mdx', 'utf8');
+				})
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+			.addStep('Quick start', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '01_hello_world/02.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 02_introducing_jsx
+	**/
+	// .addCategory('Introducing JSX')
+		.addScene('JSX Syntax')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '02_introducing_jsx/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+			.addStep('Step 2', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '02_introducing_jsx/02.mdx')
+				.withTime({
+					"start": 2000,
+					"duration": 4000,
+				})
+	/**
+	* 03_rendering_elements
+	**/
+	// .addCategory('Rendering Elements')				
+		.addScene('Rendering Elements')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '03_rendering_elements/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+			.addStep('Step 2', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '03_rendering_elements/02.mdx')
+				.withTime({
+					"start": 4000,
+					"duration": 8000,
+				})
+	/**
+	* 04_components_and_props
+	**/
+	// .addCategory('Components and Properties')				
+		.addScene('Components and Properties')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '04_components_and_props/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 05_state_and_lifecycle
+	**/
+	// .addCategory('State and Lifecycle')				
+		.addScene('State and Lifecycle')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '05_state_and_lifecycle/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 06_handling_events
+	**/
+	// .addCategory('Handling Events')				
+		.addScene('Handling Events')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '06_handling_events/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 07_conditional_rendering
+	**/
+	// .addCategory('Conditional Rendering')				
+		.addScene('Conditional Rendering')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '07_conditional_rendering/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 08_lists_and_keys
+	**/
+	// .addCategory('Lists and Keys')				
+		.addScene('Lists and Keys')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '08_lists_and_keys/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 09_forms
+	**/
+	// .addCategory('Forms')				
+		.addScene('Forms')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '09_forms/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})	
+	/**
+	* 10_lifting_state_up
+	**/
+	// .addCategory('Lifting State Up')				
+		.addScene('Lifting State Up')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '10_lifting_state_up/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 10_lifting_state_up
+	**/
+	// .addCategory('Lifting State Up')				
+		.addScene('Lifting State Up')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '10_lifting_state_up/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 11_composition_vs_inheritance
+	**/
+	// .addCategory('Composition vs Inheritance')				
+		.addScene('Composition vs Inheritance')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '11_composition_vs_inheritance/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* 12_thinking_in_react
+	**/
+	// .addCategory('Thinking in React') 		
+		.addScene('Thinking in React')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '12_thinking_in_react/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+
+	/**
+	* @category Redux
+	**/
+	.addCategory('Redux') 		
+		.addScene('Introduction to redux')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '12_thinking_in_react/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	/**
+	* @category React and Redux
+	**/
+	.addCategory('React and Redux') 		
+		.addScene('Using Redux with React')
+			.addStep('Step 1', '/feature/branch')
+				.addDescriptionFromMdFile(PATH_TO_HELLOWORLD + '12_thinking_in_react/01.mdx')
+				.withTime({
+					"start": 0,
+					"duration": 4000,
+				})
+	.write('playbook.hello.json');
