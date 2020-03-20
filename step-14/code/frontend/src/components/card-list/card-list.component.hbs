@@ -1,0 +1,66 @@
+/** 
+ * @class CardList
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+
+/**
+ * @requires Styles
+ */
+import './card-list.styles.css';
+
+
+/**
+ * @requires Components
+ */
+import Card from '../card/card.component';
+
+/**
+{{partial_1}} * @param {TProperty} TProperty 
+ */
+type TProperty = {
+{{partial_2}}}
+{{partial_3}}/**
+ * @param {TState} TState
+ */
+type TState = {
+
+}
+
+/**
+ * CardList
+ *
+ * @class CardList
+ * @extends {React.Component<TProperty, TState>}
+ */
+class CardList extends React.Component<TProperty, TState> {
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+{{partial_4}}    }
+
+    /**
+     * Render the CardList
+     *
+     * @returns {JSX} component 
+     * @memberof CardList
+     */
+    render() {
+
+{{partial_5}}        return (
+            <div className="cardListComponent">
+                <div className="cardListName">
+{{partial_6}}                </div>
+{{partial_7}}                </div>
+            </div>
+        );
+    }
+
+}
+
+export default CardList;
