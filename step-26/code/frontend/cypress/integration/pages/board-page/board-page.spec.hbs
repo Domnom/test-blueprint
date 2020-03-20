@@ -1,0 +1,362 @@
+import { Given, When, Then, And, defineStep } from 'cypress-cucumber-preprocessor/steps';
+
+/**
+ * @description Handle dragging and dropping of a card on/between card lists
+ */
+const dragAndDropCard = (draggableAlias: string, dropAlias: string, isDropAliasACard: boolean = false, shouldDropAfterCard: boolean = false) => {
+
+    /**
+     * @description Get the drop
+     */
+    cy.get(dropAlias)
+        .first()
+        .then((dropElement: JQuery<HTMLElement>) => {
+
+            /**
+             * @description With the found element, get the position and size of it
+             */
+            const dropElementSizeAndPosition = dropElement[0].getBoundingClientRect();
+
+            /**
+             * @description Now find the dragging element
+             */
+            cy.get(draggableAlias)
+                .first()
+                .then((dragElement: JQuery<HTMLElement>) => {
+
+                    /**
+                     * @description Save the position and size of the Dragging element
+                     */
+                    const dragElementSizeAndPosition = dragElement[0].getBoundingClientRect();
+
+                    /**
+                     * @description Re-wrap the drag element for use with cypress and click it
+                     */
+                    cy.wrap(dragElement)
+                        .trigger('mousedown', {
+                            button: 0,
+                            force: true
+                        });
+
+                    /**
+                     * @description Now that the dragged element is clicked, we will use the body to control the mouse.
+                     *              We do this as the dragging element seems to dissapear from view before we can trigger a mouse release
+                     */ 
+
+                    let dropLeft = dropElementSizeAndPosition.left;
+                    // let dropTop = (isDropAliasACard == true && shouldDropAfterCard == true) ? dropElementSizeAndPosition.top + (10) : dropElementSizeAndPosition.top;
+                    let dropTop = dropElementSizeAndPosition.top;
+
+                    if (isDropAliasACard === true && shouldDropAfterCard === true)
+                    {
+                        // -- We are dragging a card to the bottom of another card
+                        dropTop = dropElementSizeAndPosition.top + ((dropElementSizeAndPosition.height / 2))
+                    }
+                    else if (isDropAliasACard === false)
+                    {
+                        // -- We are dragging a card to a card-container in a list. This should only happen if the container is empty
+                        //    so we will need to position the center of the card to be within the bounds of the card container
+                        dropTop =  dropTop - dragElementSizeAndPosition.height / 2;
+                    }
+
+
+                    
+                    cy.get('body')
+                        .first()
+                        .trigger('mousemove', {
+                            button: 0,
+                            clientX: dragElementSizeAndPosition.left,
+                            clientY: dragElementSizeAndPosition.top
+                        })
+                        .trigger('mousemove', {
+                            button: 0,
+                            clientX : dropLeft,
+                            clientY: dropTop
+                        })
+                        .trigger('mouseup');
+
+                    cy.wait(1000)
+                });
+
+        });
+}
+
+
+
+
+
+/** 
+ * 
+ * @Scenario As a user opening the board page
+ * 
+ */
+Given("I navigate to the board page", () => {
+    cy.visit("/");
+})
+Then("I should see a board with 3 lists", () => {
+    cy.get('[data-rbd-draggable-id="list-1"]')
+        .as('list-1')
+        .find('.cardListName')
+        .contains("List 1")
+
+    cy.get('@list-1')
+        .find('.cardContainer')
+        .as('list-1-card-container')
+
+    cy.get('[data-rbd-draggable-id="list-2"]')
+        .as('list-2')
+        .find('.cardListName')
+        .contains("List 2")
+
+    cy.get('@list-2')
+        .find('.cardContainer')
+        .as('list-2-card-container')
+
+    cy.get('[data-rbd-draggable-id="list-3"]')
+        .as('list-3')
+        .find('.cardListName')
+        .contains("List 3")
+    
+    cy.get('@list-3')
+        .find('.cardContainer')
+        .as('list-3-card-container')
+});
+And("the first list should have 2 cards called 'Card 1' and 'Card 2'", () => {
+    
+    cy.get('@list-1-card-container')
+        .children()
+        .should('have.length', 2);
+        
+    cy.get('@list-1-card-container')
+        .find('[data-rbd-draggable-id="card-1"]')
+        .as('card-1')
+        .find('.cardName')
+        .contains('Card 1');
+
+    cy.get('@list-1-card-container')
+        .find('[data-rbd-draggable-id="card-2"]')
+        .as('card-2')
+        .find('.cardName')
+        .contains('Card 2');
+
+    cy.get
+});
+And("the second list should have 1 card called 'Card 3'", () => {
+    
+    cy.get('@list-2-card-container')
+        .children()
+        .should('have.length', 1);
+
+    cy.get('@list-1-card-container')
+        .find('[data-rbd-draggable-id="card-2"]')
+        .as('card-2')
+        .find('.cardName')
+        .contains('Card 2');
+})
+And("the third list should be empty", () => {
+
+    cy.get('@list-3-card-container')
+        .should('be.empty');
+    
+})
+
+
+
+
+
+/** 
+ * 
+ * @Scenario As a user moving a card below another card in the same list
+ * 
+ */
+Given("I have a list with 2 cards 'Card 1' and 'Card 2'", () => {
+
+    cy.visit("/");
+
+    cy.get('[data-rbd-draggable-id="list-1"] .cardContainer')
+        .as('list-1-card-container')
+        .children()
+        .then((childElements: JQuery<HTMLElement>) => {
+
+            // -- Get the first and second elements and set them as the card-1 and card-2
+            cy.wrap(childElements)
+                .eq(0)
+                .as('card-1')
+                .should('have.data', 'rbdDraggableId', 'card-1')
+
+            cy.wrap(childElements)
+                .eq(1)
+                .as('card-2')
+                .should('have.data', 'rbdDraggableId', 'card-2')
+        })
+
+})
+When("I drag the card 'Card 1' below the card 'Card 2'", () => {
+
+    dragAndDropCard('@card-1', '@card-2', true, true);
+
+})
+
+Then("the cards should have swapped positions", () => {
+
+    cy.get("@list-1-card-container")
+        .children()
+        .then((childElements: JQuery<HTMLElement>) => {
+
+            cy.wrap(childElements)
+                .eq(0)
+                .should('have.data', 'rbdDraggableId', 'card-2');
+            
+            cy.wrap(childElements)
+                .eq(1)
+                .should('have.data', 'rbdDraggableId', 'card-1');
+        })
+
+})
+
+
+
+
+
+/**
+ * 
+ * @Scenario As a user moving a card above another card in the same list
+ * 
+ */
+When("I drag the card 'Card 2' above the card 'Card 1'", () => {
+    dragAndDropCard('@card-1', '@card-2', true, false);
+})
+
+
+
+
+
+/** 
+ * 
+ * @Scenario As a user moving a card from one list above a card in another list
+ * 
+ */
+Given("I have 2 lists, 'List 1' with 2 cards, 'Card 1', 'Card 2', and 'List 2' with 1 card 'Card 3'", () => {
+
+    cy.visit("/");
+
+    cy.get('[data-rbd-draggable-id="list-1"] .cardContainer')
+        .as('list-1-card-container')
+        .find('[data-rbd-draggable-id="card-1"]')
+        .as('card-1');
+
+    cy.get('[data-rbd-draggable-id="list-2"] .cardContainer')
+        .as('list-2-card-container')
+        .find('[data-rbd-draggable-id="card-3"]')
+        .as('card-3');
+
+})
+When("I drag the card 'Card 1' from 'List 1' above 'Card 3' in 'List 2'", () => {
+
+    dragAndDropCard('@card-1', '@card-3', true, false);
+
+})
+
+Then("'List 1' should only contain 'Card 2'", () => {
+
+    cy.get('@list-1-card-container')
+        .children()
+        .should('have.length', 1)
+        .eq(0)
+        .should('have.data', 'rbdDraggableId', 'card-2')
+
+})
+
+And("'List 2' should have 'Card 1' and 'Card 3' in that order", () => {
+
+    cy.get('@list-2-card-container')
+        .children()
+        .then((childElements: JQuery<HTMLElement>) => {
+
+            cy.wrap(childElements)
+                .eq(0)
+                .should('have.data', 'rbdDraggableId', 'card-1')
+
+            cy.wrap(childElements)
+                .eq(1)
+                .should('have.data', 'rbdDraggableId', 'card-3')
+                
+
+        })
+
+})
+
+
+
+
+
+/** 
+ * 
+ * @Scenario As a user moving a card from one list below a card in another list
+ * 
+ */
+When("I drag the card 'Card 1' from 'List 1' below 'Card 3' in 'List 2'", () => {
+
+    dragAndDropCard('@card-1', '@card-3', true, true);
+
+})
+And("'List 2' should have 'Card 3' and 'Card 1' in that order", () => {
+
+    cy.get('@list-2-card-container')
+        .children()
+        .then((childElements: JQuery<HTMLElement>) => {
+
+            cy.wrap(childElements)
+                .eq(0)
+                .should('have.data', 'rbdDraggableId', 'card-3')
+
+            cy.wrap(childElements)
+                .eq(1)
+                .should('have.data', 'rbdDraggableId', 'card-1')
+                
+
+        })
+
+})
+
+
+
+
+
+/** 
+ * 
+ * @Scenario As a user moving a card from one list to an empty list
+ * 
+ */
+Given("I Have 2 lists, 'List 2' with 1 card, 'Card 3' and 'List 3' that is empty", () => {
+
+    cy.visit("/");
+
+    cy.get('[data-rbd-draggable-id="list-2"] .cardContainer')
+        .as('list-2-card-container')
+        .find('[data-rbd-draggable-id="card-3"]')
+        .as('card-3');
+
+    cy.get('[data-rbd-draggable-id="list-3"] .cardContainer')
+        .as('list-3-card-container')
+
+})
+When("I drag the card 'Card 3' from 'List 1' to 'List 3'", () => {
+
+    dragAndDropCard('@card-3', '@list-3-card-container');
+
+})
+Then("'List 2' should be empty", () => {
+
+    cy.get("@list-2-card-container")
+        .should('be.empty');
+
+})
+And("'List 3' should only contain 'Card 3'", () => {
+
+    cy.get('@list-3-card-container')
+        .children()
+        .should('have.length', 1)
+        .eq(0)
+        .should('have.data', 'rbdDraggableId', 'card-3');
+})
