@@ -1,0 +1,41 @@
+const loaderUtils = require('loader-utils');
+
+/**
+ * @name WebpackLoader 
+ * @description Must be a function. 
+ * @usage 
+ *    `const rule = { test: '...', use: ['example-loader']  };`
+ *    `config.module.rules.push(rule)`;
+ * @this - `this` webpack binds config to the context of this 
+ * @param {string} source - source file as a string 
+ * @param {Options} options - loader utils 
+ * @returns {string} transformed - source file transformed 
+ **/
+const WebpackLoader = function(source){
+  
+  const options = loaderUtils.getOptions(this);
+
+  /**
+   * @param {string} source - source file as a string
+   **/
+  var transformed = source; 
+  
+  /**
+  * @usage `this` is a reference to webpack config 
+  **/
+  
+  console.log('🦄 Transformation from `source` to `transformed`:', {
+    options, 
+    source, 
+    transformed, 
+    // _this: this
+  });
+  
+  /**
+   * @returns {string} transformed - source file transformed 
+   **/
+  return transformed;
+  
+}
+
+module.exports = WebpackLoader;
