@@ -1,0 +1,7 @@
+    "test": "echo \"Setup tests\"",
+    "build:dev": "webpack --config webpack.dev.js",
+    "build:prod": "webpack --config webpack.prod.js",
+    "start:dev": "clear && webpack-dev-server --open --hot --config webpack.dev.js",
+    "story": "start-storybook -p 6006",
+    "story:build": "build-storybook -c .storybook -o docs/storybook",
+    "story:publish": "yarn run story:build && cd docs/storybook && surge projectname-story.surge.sh"
