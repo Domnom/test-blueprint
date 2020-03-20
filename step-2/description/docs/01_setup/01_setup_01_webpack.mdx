@@ -1,0 +1,84 @@
+# WebPack
+
+## Entry 
+Where to start. This is like the first file to start.  
+
+```js
+    /** 
+     * @name Entry 
+     * @description Start here 
+     **/
+    entry: {
+        src : [
+            "babel-polyfill", 
+            path.join(__dirname, "/src/index.tsx")
+        ]
+    },
+```
+
+
+## Modules
+Modules work in reverse order. Look wepack sucks and is weird so you just have to roll with it. 
+
+Webpack loaders first off match the `test` 
+
+Then files that match the `test` extension will be transformed through the `loader`. The loaders happen in reverse order ... silly I know, but yeah. 
+It will transform the file into javascript that can be handled by the browser. 
+
+
+### Load Typescript files 
+```js
+
+    module : {
+        rules: [ 
+            /** 
+             * @name Typescript
+             * @description TS and TSX loader 
+             **/
+            {
+                test : /\.tsx?$/,
+                // use: ["babel-loader", "ts-loader", "tslint-loader"]
+                use: ['awesome-typescript-loader']
+            },
+        ]
+    }
+
+```
+
+This matches all extensions with `.tsx` and parses them through `'awesome-typescript-loader'`. This will use the Typescript compiler (`tsc`) and transpiles it into vanilla javascript. 
+
+
+## Plugins 
+Add the HTML index page to the dist folder 
+
+```js
+    plugins: {
+        /** 
+         * @name Images 
+         * @namespace plugins 
+         * @description Update the HTML static page 
+         **/
+        new HtmlWebPackPlugin({
+            template : "./src/index.html"
+        }),
+        
+    }
+```
+
+
+Copy the assets folder with the images and css to the dist bundle 
+
+```js
+    plugins: {
+        /** 
+        * @name CopyWebpackPlugin 
+        * @namespace plugins 
+        * @description Copy the css and image assets to the dist folder 
+        **/
+        new CopyWebpackPlugin([
+            {
+                from:'src/assets',
+                to:'assets'
+            } 
+        ]), 
+```
