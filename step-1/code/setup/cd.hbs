@@ -1,0 +1,35 @@
+#!/bin/bash 
+
+echo What is the path to the installation root?
+varRoot=./
+read varRoot
+echo Opening the directory: $varRoot 
+
+#
+# @description change to dir 
+# @tutorial https://stackoverflow.com/questions/3349105/how-to-set-current-working-directory-to-the-directory-of-the-script 
+#
+cd $varRoot
+ls 
+pwd 
+
+
+
+
+mkdir .storybook
+
+#
+# @name story config
+# @description create config to find all stories 
+#
+wget https://gist.githubusercontent.com/mitni455/bed361dc969848bced2a37ef50b25acc/raw/f858f15ee1515c49a5d1144b92079f67856e36e3/.storybook.config.js --output-document=storybook.config.js
+mv storybook.config.js .storybook/config.js 
+
+
+mkdir -p src/example-stories
+cd src/example-stories 
+wget https://gist.githubusercontent.com/mitni455/bed361dc969848bced2a37ef50b25acc/raw/3e39c60e54ba313ad5d78cb4a732cb33e590a551/example.actions.stories.tsx --output-document=example.actions.stories.tsx
+wget https://gist.githubusercontent.com/mitni455/bed361dc969848bced2a37ef50b25acc/raw/3e39c60e54ba313ad5d78cb4a732cb33e590a551/example.knobs.stories.tsx --output-document=example.knobs.stories.tsx
+
+
+
