@@ -1,0 +1,16 @@
+    
+    /**
+     * Everytime this.props changes, we can use the props to re-build this.state.
+     * This is a built in react static function and because it is static, we will not have access to any non-static class properties
+     * 
+     * We will be taking the listsData passed in by this.props and sorting it using string sorts to get order the listsData in ascending order.
+     * This will allow react-beautiful-rnd to print the lists in the correct order
+     *
+     * @static
+     * @param {TProperty} props
+     * @param {TState} state
+     * @returns
+     * @memberof Board
+     */
+    static getDerivedStateFromProps(props: TProperty, state: TState) {
+        let listsDataOrdered = [];
