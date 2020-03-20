@@ -1,0 +1,84 @@
+/** 
+ * @class Board BDD tests
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React from 'react';
+import { loadFeature, defineFeature } from 'jest-cucumber';
+import { render, RenderResult } from '@testing-library/react';
+
+import { generatePosition } from '../../common/utils/lexicographic.util';
+
+/**
+ * @import Components
+ */
+import Board from './board.component';
+
+const feature = loadFeature('./src/components/board/board.feature')
+
+defineFeature(feature, test => {
+
+    let renderedComponent: RenderResult;
+
+    test("The board component is mounted", ({given, when, then, and}) => {
+
+        given("I have a Board", () => {
+            const listsData = [
+                {
+                    id : 1,
+                    position: 'n',
+                    name : "List 1",
+                    cards : [
+                        {
+                            id : 1,
+{{partial_1}}                            name : "Card 1"
+                        },
+                        {
+                            id : 2,
+{{partial_2}}                            name : "Card 2"
+                        }
+                    ]
+                },
+                {
+                    id : 2,
+                    position: generatePosition('n'),
+                    name : "List 2",
+                    cards : [
+                        {
+                            id : 3,
+{{partial_3}}                            name : "Card 3"
+                        },
+                        {
+                            id : 4,
+{{partial_4}}                            name : "Card 4"
+                        }
+                    ]
+                }
+            ]
+
+            renderedComponent = render(<Board name="Board name" listsData={listsData}/>);
+        })
+
+        when("I look at it", () => {
+            expect(renderedComponent).toBeDefined();
+        })
+
+        then("I should see the name of the board", () => {
+            const boardNameDiv = renderedComponent.getByText(/board name/i);
+        })
+
+        and("I should see 2 card lists with the names of 'List 1' and 'List 2'", () => {
+            const cardListName1Div = renderedComponent.getByText(/list 1/i);
+            const cardListName2Div = renderedComponent.getByText(/list 2/i);
+        })
+
+        and("2 Cards on each list with the names of 'Card 1', 'Card 2', 'Card 3' and 'Card 4'", () => {
+            const cardName1Div = renderedComponent.getByText(/card 1/i);
+            const cardName2Div = renderedComponent.getByText(/card 2/i);
+            const cardName3Div = renderedComponent.getByText(/card 3/i);
+            const cardName4Div = renderedComponent.getByText(/card 4/i);
+        })
+    })
+
+})
