@@ -1,0 +1,245 @@
+/** 
+ * @class Board
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { DragDropContext, Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
+
+import { generatePosition } from '../../common/utils/lexicographic.util'
+
+{{partial_1}}/**
+ * @import Components
+ */
+import CardList from '../card-list/card-list.component';
+
+/**
+ * @import Styles
+ */
+import './board.styles.css';
+import generate from '@babel/generator';
+
+/**
+ * @import Types
+ */
+type TCardData = {
+    id: number;
+    position: string;
+    name : string;
+}
+type TListData = {
+    id : number;
+    position: string;
+    name : string;
+    cards : TCardData[];
+}
+
+/**
+ * @param {TProperty} TProperty 
+ */
+type TProperty = {
+    name : string;
+    listsData? : TListData[]
+}
+/**
+ * @param {TState} TState
+ */
+type TState = {
+{{partial_2}}}
+
+/**
+ * Board 
+ *
+ * @class Board
+ * @extends {React.Component<TProperty, TState>}
+ */
+class Board extends React.Component<TProperty, TState> {
+
+    /**
+     * @description An object that contains the CardList droppableId (which should be in the format of list-{id})
+     *              that points to the instance of <CardList>. This could prove useful to fetch the index position of a
+     *              Card in the CardList when we drag and drop cards
+     */
+    private cardListRefsByDroppableId: { [droppableId: string]: React.RefObject<any> } = {};
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+        name : PropTypes.string.isRequired,
+        listsData : PropTypes.arrayOf(Object)
+    }
+    
+    /**
+     * Everytime this.props changes, we can use the props to re-build this.state.
+     * This is a built in react static function and because it is static, we will not have access to any non-static class properties
+     * 
+     * We will be taking the listsData passed in by this.props and sorting it using string sorts to get order the listsData in ascending order.
+     * This will allow react-beautiful-rnd to print the lists in the correct order
+     *
+     * @static
+     * @param {TProperty} props
+     * @param {TState} state
+     * @returns
+     * @memberof Board
+     */
+    static getDerivedStateFromProps(props: TProperty, state: TState) {
+
+        /**
+{{partial_3}}         */
+{{partial_4}}
+{{partial_5}}
+{{partial_6}}        }
+{{partial_7}}    }
+
+
+    constructor(props: TProperty)
+    {
+        super(props);
+
+        /**
+         * @description Initialising state. This is the only place we can do this.state. Everywhere else use this.setState.
+         *              Initialisation is required as we use getDerivedStateFromProps and it throws a warning if we do not do this step
+         */
+        this.state = {
+{{partial_8}}            listsData: []
+        }
+
+        /**
+         * @description We are binding this function to allow it access to this classes instance. An alternative to this
+         *              is to declare the function with fat arrow syntax
+         */
+        this.handleDragAndDropOnDragEnd = this.handleDragAndDropOnDragEnd.bind(this);
+    }
+
+    /**
+     * Render the Board 
+     *
+     * @returns {JSX} component 
+     * @memberof Board
+     */
+    render() {
+        let cardListComponents: JSX.Element[] = [];
+
+        /**
+         * @description We are checking to see if there are listsData to build cardListComponents
+         */
+        if (this.state.listsData)
+        {
+            /**
+             * @description Using array functions, iterate over the listsData and return JSX.Elements
+             */
+            cardListComponents = this.state.listsData.map((listData: TListData, listDataIndex: number) => {
+                /**
+                 * @description Check if the required props for the CardList before creating
+                 */
+                if (listData.hasOwnProperty('id') && listData.hasOwnProperty('name'))
+                {
+                    /**
+                     * @description Stating the draggable/droppable Id of the CardList
+                     */
+                    const cardListDragDropId = "list-" + listData.id;
+                    /**
+                     * @decription Fetch or create a refObject for a CardList
+                     */
+                    let cardListRefObject: React.RefObject<React.Component> = this.cardListRefsByDroppableId[cardListDragDropId];
+                    if (!cardListRefObject)
+                    {
+                        /**
+                         * @description There is no Ref. Lets create one and save it for use
+                         */
+                        cardListRefObject = React.createRef();
+                        this.cardListRefsByDroppableId[cardListDragDropId] = cardListRefObject;
+                    }
+
+                    return (
+                        <Draggable
+                            key={"list-" + listData.id}
+                            index={listDataIndex}
+                            draggableId={"list-" + listData.id}
+                        >
+                            {(provided: DraggableProvided) => {
+                                return (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.dragHandleProps}
+                                        {...provided.draggableProps}
+                                    >
+                                        <CardList
+                                            ref={cardListRefObject}
+                                            listId={listData.id}
+                                            name={listData.name}
+                                            cardsData={listData.hasOwnProperty("cards") ? listData.cards : null}
+                                        />
+                                    </div>
+                                )
+                            }}    
+                        </Draggable>
+                    )
+                }
+            })
+        }
+
+
+        return (
+            <div className="boardComponent">
+                <div className="boardName">
+                    {this.props.name}
+                </div>
+                <DragDropContext onDragEnd={ ({ draggableId, source, destination, type }) => { this.handleDragAndDropOnDragEnd(draggableId, source, destination, type) }}>
+                    <Droppable
+                        droppableId="board-id" 
+                        type="COLUMN" 
+                        direction="horizontal"
+                    >
+                        {(provided: DroppableProvided) => {
+                            // The data-testid is used by react-testing-library to find the container
+                            return (
+                                <div 
+                                    ref={provided.innerRef}
+                                    className="cardListContainer"
+                                    data-testid="board.cardListContainer"
+                                >
+                                    {cardListComponents}
+
+                                    {/* This will allow the other draggables to reposition themselves to allow a gap for the card we are dragging  */}
+                                    {provided.placeholder}
+                                </div>
+                            )
+                        }}
+                    </Droppable>
+                </DragDropContext>
+            </div>
+        );
+    }
+
+
+    /**
+     * Handler for DragDropContext. Fires when a draggable lands in a droppable zone.
+     * currently it handles CardList drops
+     *
+     * @param {string} draggableId
+     * @param {{droppableId: string, index: number}} source
+     * @param {{droppableId: string, index: number}} destination
+     * @param {string} type
+     * @memberof Board
+     */
+    handleDragAndDropOnDragEnd(
+        draggableId: string, 
+        source: {droppableId: string, index: number}, 
+        destination: {droppableId: string, index: number}, 
+        type: string) 
+    {
+{{partial_9}}
+        /**
+         * @description Finally we save the state and let render do its thing
+         */
+        this.setState({
+{{partial_10}}            listsData : listsDataCloned
+{{partial_11}}    }
+
+}
+
+export default Board;
