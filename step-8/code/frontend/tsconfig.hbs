@@ -1,0 +1,56 @@
+{
+    "compilerOptions": {
+
+        "outDir": "./dist/",
+
+        "sourceMap": true,
+
+        "noImplicitAny": false,
+
+        "module": "commonjs",
+
+        "target": "es6",
+
+        "jsx": "react",
+
+        "esModuleInterop" : true,
+
+        "allowJs": true,
+
+        "moduleResolution": "node",
+        
+        "allowSyntheticDefaultImports": true,
+
+        "typeRoots" : [
+            "./node_modules/@types",
+            "./@types"
+        ],
+
+        "strict": false,
+
+        "strictNullChecks": false,
+
+        "resolveJsonModule": true, 
+
+        "baseUrl": "./",
+
+        "paths": {
+            "@config/*":        ["src/config/*"], 
+            "@common/*":        ["src/common/*"], 
+            "@components/*":    ["src/components/*"], 
+            "@services/*":      ["src/services/*"],
+            "@models/*":        ["src/models/*"],
+            "@enums/*":         ["src/enums/*"],
+            "@errors/*":        ["src/models/errors/*"],
+            "@redux/*":         ["src/redux/*"],
+            "@mocks/*":         ["test/mocks/*"],
+            "@utils/*":         ["src/utils/*"],
+            "@assets/*":         ["src/assets/*"]
+        },
+{{partial_1}}        "rootDirs": [
+            "src"
+        ]
+    },
+
+    "exclude": ["node_modules"]
+}
