@@ -1,0 +1,17 @@
+                    /**
+                     * @description Stating the draggable/droppable Id of the CardList
+                     */
+                    const cardListDragDropId = "list-" + listData.id;
+                    /**
+                     * @decription Fetch or create a refObject for a CardList
+                     */
+                    let cardListRefObject: React.RefObject<React.Component> = this.cardListRefsByDroppableId[cardListDragDropId];
+                    if (!cardListRefObject)
+                    {
+                        /**
+                         * @description There is no Ref. Lets create one and save it for use
+                         */
+                        cardListRefObject = React.createRef();
+                        this.cardListRefsByDroppableId[cardListDragDropId] = cardListRefObject;
+                    }
+
