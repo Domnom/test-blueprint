@@ -1,0 +1,153 @@
+            /**
+             * @description Ensure the listDataSource exists before we use it
+             */
+            if (listDataSource)
+            {
+                /**
+                 * @description Search for the card that was dragged by using the source.index
+                 */
+                let cardDataDropped: TCardData = listDataSource.cards[source.index];
+
+                /**
+                 * @description Ensure the cardDataDropped exists
+                 */
+                if (cardDataDropped)
+                {
+                    /**
+                     * @description Check if we are moving the card into a new card list or the same card list
+                     */
+                    if (source.droppableId != destination.droppableId)
+                    {
+                        /**
+                         * @description We are swapping to a different card list! First remove the cardDataDropped from listDataSource
+                         */
+                        listDataSource.cards.splice(source.index, 1);
+
+                        /**
+                         * @description Find the destination card list
+                         */
+                        let listDataDestination: TListData = listsDataCloned.find((listData: TListData): boolean => {
+                            return ("list-" + listData.id) === destination.droppableId;
+                        })
+
+                        if (listDataDestination)
+                        {
+                            /**
+                             * @description Initialize the cards array if it doesn't already exist
+                             */
+                            if (!listDataDestination.cards)
+                            {
+                                listDataDestination.cards = [];
+                            }
+
+                            if (listDataDestination.cards.length === 0)
+                            {
+                                /**
+                                 * @description There are no cards in the destination! Lets just set the default position and add the card directly
+                                 */
+                                cardDataDropped.position = generatePosition();
+                                listDataDestination.cards.push(cardDataDropped);
+                            }
+                            else
+                            {
+                                if (destination.index === 0)
+                                {
+                                    /**
+                                     * @description We are dragging to the start. Get the original start card (we will call it cardDataEnd as it will follow after the new card)
+                                     */
+                                    const cardDataEnd: TCardData = listDataDestination.cards[destination.index];
+
+                                    /**
+                                     * @description Generate a new position with this cardDataEnd as the end point
+                                     */
+                                    cardDataDropped.position = generatePosition(null, cardDataEnd.position);
+                                }
+                                else if (destination.index === listDataDestination.cards.length)
+                                {
+                                    /**
+                                     * @description We are dragging to the end of the list. Get the last item and call it card start
+                                     */
+                                    const cardDataStart: TCardData = listDataDestination.cards[destination.index - 1]
+
+                                    /**
+                                     * @description Generate a new position with this cardDataStart as the start point
+                                     */
+                                    cardDataDropped.position = generatePosition(cardDataStart.position);
+                                }
+                                else
+                                {
+                                    /**
+                                     * @description We are in the middle of 2 cards. Fetch the start and end cardData points
+                                     */
+                                    let cardDataStart: TCardData = listDataDestination.cards[destination.index - 1];
+                                    let cardDataEnd: TCardData = listDataDestination.cards[destination.index];
+
+                                    /**
+                                     * @description Generate a new position
+                                     */
+                                    cardDataDropped.position = generatePosition(cardDataStart.position, cardDataEnd.position);
+                                }
+                                
+                                /**
+                                 * @description Now we can add the cardDataDropped to the destination array. Do not need to re-sort
+                                 *              as the sorting should happen in the CardList component
+                                 */
+                                listDataDestination.cards.push(cardDataDropped);
+                                listDataDestination.cards = listDataDestination.cards.sort((cardDataA: TCardData, cardDataB: TCardData) => {
+                                    return cardDataA.position.localeCompare(cardDataB.position);
+                                })
+                            }
+                        }
+                    }
+                    else
+                    {
+                        /**
+                         * @description The card is staying on the same list
+                         */
+                        if (destination.index === 0)
+                        {
+                            /**
+                             * @description We are dragging to the start. Get the original start card (we will call it cardDataEnd as it will follow after the new card)
+                             */
+                            const cardDataEnd: TCardData = listDataSource.cards[destination.index];
+
+                            /**
+                             * @description Generate a new position with this cardDataEnd as the end point
+                             */
+                            cardDataDropped.position = generatePosition(null, cardDataEnd.position);
+                        }
+                        else if (destination.index === listDataSource.cards.length - 1)
+                        {
+                            /**
+                             * @description We are dragging to the end of the list. Get the last item and call it card start
+                             */
+                            const cardDataStart: TCardData = listDataSource.cards[destination.index];
+
+                            /**
+                             * @description Generate a new position with this cardDataStart as the start point
+                             */
+                            cardDataDropped.position = generatePosition(cardDataStart.position);
+                        }
+                        else
+                        {
+                            /**
+                             * @description We are in the middle of 2 cards. Fetch the start and end cardData points
+                             */
+                            let cardDataStart: TCardData = listDataSource.cards[destination.index - 1];
+                            let cardDataEnd: TCardData = listDataSource.cards[destination.index];
+
+                            /**
+                             * @description Generate a new position
+                             */
+                            cardDataDropped.position = generatePosition(cardDataStart.position, cardDataEnd.position);
+                        }
+
+                        /**
+                         * @description Once the new position is saved, re-sort the cards 
+                         */
+                        listDataSource.cards = listDataSource.cards.sort((cardDataA: TCardData, cardDataB: TCardData) => {
+                            return cardDataA.position.localeCompare(cardDataB.position);
+                        })
+                    }
+                }
+            }
