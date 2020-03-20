@@ -1,0 +1,183 @@
+require('babel-polyfill');
+const path = require('path');
+const FileListPlugin = require('./.webpack/plugins/FileListPlugin');
+const HtmlWebPackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const WebpackConfig = {
+    stats: {
+        warnings: false,
+        colors: true
+    },
+
+    /** 
+     * @name Entry 
+     * @description Start here 
+     **/
+    entry: {
+        src : [
+            "babel-polyfill", 
+            path.join(__dirname, "/src/index.tsx")
+        ]
+    },
+    /** 
+     * @name Resolve
+     * @description TS and TSX loader 
+     * @param extensions - resolve in this order. Lookup .ts, then .tsx, then .js
+     * @param alias - alias to the path like a @path 
+     * e.g.     alias: {
+     *              @utils: path.resolve(__dirname, 'src/utilities/'), 
+     *          }
+     * 
+     * e.g.     import Utility from '../../utilities/utility';
+     *          import Utility from '@utils/utility';
+     **/
+    resolve : {
+        extensions : [".ts", ".tsx", ".js"],
+        alias : {
+            // handlebars: 'handlebars/dist/handlebars.min.js',
+            '@redux': path.resolve(__dirname, 'src/redux'),
+        }
+    },
+
+    /** 
+     * @name ResolveLoaders
+     * @description Tell webpack where to look for loaders. By default it looks in `node_modules` but we want it to also look in `.webpack/loaders`
+     **/
+    resolveLoader: {
+        modules: [
+            'node_modules', /** this is the default */
+            path.resolve(__dirname,'.webpack/loaders')
+        ]
+    }, 
+
+    module : {
+        rules: [ 
+            /** 
+             * @name Typescript
+             * @description TS and TSX loader 
+             **/
+            {
+                test : /\.tsx?$/,
+                use: [
+                    'awesome-typescript-loader', 
+                    
+                    /**
+                     * @name Example Loader  
+                     * @description example webpack loader from `.webpack/loaders/example-loader.js` 
+                     * @requires yarn add -D loader-utils 
+                     **/
+                    {
+                        loader: 'example-loader', 
+                        /** @requires yarn add -D loader-utils */
+                        options: {
+                            name: 'Some name'
+                        }
+                    }
+                ]
+            },
+
+            /** 
+             * @name Javascript 
+             * @description JS loader 
+             **/
+            { 
+                enforce: "pre", 
+                test: /\.js$/, 
+                loader: "source-map-loader" 
+            },
+
+            /** 
+             * @name CSS 
+             * @description CSS loader 
+             **/
+            {
+                test : /\.css$/i,
+                use : ["style-loader", "css-loader"]
+            },
+
+            /** 
+             * @name SASS 
+             * @description SASS and SCSS loader. Reverse order.
+             **/
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    /** 
+                     *  3. Creates `style` nodes from JS strings
+                     **/
+                    'style-loader',
+                    /** 
+                     * 2. Translates CSS into CommonJS
+                     **/
+                    'css-loader',
+                    /** 
+                     * 1. Compiles Sass to CSS
+                     **/
+                    'sass-loader',
+                ],
+            },
+            /** 
+             * @name Images 
+             * @description Image loader 
+             **/
+            {
+                test: /\.(png|svg|jpg|gif|jpe?g)$/,
+                use: [
+                    {
+                        options: {
+                            name: "[name].[ext]",
+                            outputPath: "assets/imgs/"
+                        },
+                        loader: "file-loader"
+                    }
+                ]
+            }
+        ]
+    },
+    plugins: [
+        /** 
+         * @name HTML 
+         * @namespace plugins 
+         * @description Update the HTML static page 
+         **/
+        new HtmlWebPackPlugin({
+            template : "./src/index.html"
+        }),
+        
+        /** 
+        * @name CopyWebpackPlugin 
+        * @namespace plugins 
+        * @description Copy the css and image assets to the dist folder 
+        **/
+        new CopyWebpackPlugin([
+            {
+                from:'src/assets',
+                to:'assets'
+            } 
+        ]), 
+
+        /** 
+        * @name FileListPlugin 
+        * @namespace plugins 
+        * @description Example plugin 
+        **/
+        new FileListPlugin({options: true})
+    ],
+
+    /**
+     * @name externals 
+     * @description Exclude from bundling 
+     *  When importing a module whose path matches one of the following, just
+     *  assume a corresponding global variable exists and use that instead.
+     *  This is important because it allows us to avoid bundling all of our
+     *  dependencies, which allows browsers to cache those libraries between builds.
+     **/
+    // externals: {
+    //     'react': 'React',
+    //     'react-dom': 'ReactDOM'
+    // }
+}
+
+
+module.exports = WebpackConfig;
