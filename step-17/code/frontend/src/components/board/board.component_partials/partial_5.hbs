@@ -1,0 +1,24 @@
+        /**
+         * @description We are checking to see if there are listsData to build cardListComponents
+         */
+        if (this.props.listsData)
+        {
+            /**
+             * @description Using array functions, iterate over the listsData and return JSX.Elements
+             */
+            cardListComponents = this.props.listsData.map((listData: TListData, listDataIndex: number) => {
+                /**
+                 * @description Check if the required props for the CardList before creating
+                 */
+                if (listData.hasOwnProperty('name'))
+                {
+                    return (
+                        <CardList
+                            key={listDataIndex}
+                            name={listData.name}
+                            cardsData={listData.hasOwnProperty("cards") ? listData.cards : null}
+                        />
+                    )
+                }
+            })
+        }
