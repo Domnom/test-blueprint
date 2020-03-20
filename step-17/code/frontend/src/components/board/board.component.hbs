@@ -1,0 +1,68 @@
+/** 
+ * @class Board
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+
+/**
+ * @import Components
+ */
+import CardList from '../card-list/card-list.component';
+
+/**
+ * @import Styles
+ */
+import './board.styles.css';
+
+/**
+{{partial_1}} * @param {TProperty} TProperty 
+ */
+type TProperty = {
+{{partial_2}}}
+/**
+ * @param {TState} TState
+ */
+type TState = {
+
+}
+
+/**
+ * Board 
+ *
+ * @class Board
+ * @extends {React.Component<TProperty, TState>}
+ */
+class Board extends React.Component<TProperty, TState> {
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+{{partial_3}}    }
+
+    /**
+     * Render the Board 
+     *
+     * @returns {JSX} component 
+     * @memberof Board
+     */
+    render() {
+
+{{partial_4}}
+{{partial_5}}
+{{partial_6}}        return (
+            <div className="boardComponent">
+                <div className="boardName">
+{{partial_7}}                </div>
+                {/* Container will be used to setup the full size of the container */}
+{{partial_8}}                </div>
+            </div>
+        );
+    }
+
+}
+
+export default Board;
