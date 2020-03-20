@@ -1,0 +1,10 @@
+        const url = textAddOn('Wireframe Url', 'https://miro.medium.com/max/1600/1*ZvtdfRPAdFpf2av_bvqE6w.png', 'Wireframe');
+        const isPicture = booleanAddOn('Display as Image (or iFrame)', true, 'Options');
+    
+        if(isPicture){
+            return (<img src={url} />)
+        }
+        else{
+            return (<iframe style={{width: '100%', height:'100%'}} src={url} />)
+        }
+    
