@@ -1,0 +1,42 @@
+{
+  "name": "master-class-trello-clone",
+  "version": "1.0.0",
+  "description": "MasterClass Trello Clone monorepo",
+  "main": "index.js",
+  "scripts": {
+    "test": "yarn test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mitni455/master-class-trello-clone.git"
+  },
+  "keywords": [
+    "reactjs",
+    "nestjs",
+    "docker",
+    "nginx",
+    "lerna"
+  ],
+  "author": "Nick Mitchell",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mitni455/master-class-trello-clone/issues"
+  },
+  "homepage": "https://github.com/mitni455/master-class-trello-clone#readme",
+  "devDependencies": {
+    "cz-conventional-changelog": "3.0.2",
+    "husky": "^3.0.9"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn test",
+      "pre-push": "yarn test",
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true"
+    }
+  }
+}
