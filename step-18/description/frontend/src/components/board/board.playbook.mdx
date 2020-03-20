@@ -1,0 +1,95 @@
+# board Component (Scene for a visual component)
+Holds a bunch of CardList components
+
+### What we are working on
+We now want to add the ability to re-order card lists in a board. Just like the card-lists, we will be using `react-beautiful-dnd` to move things around.
+
+The components that we will be using from this library are:  
+`DragDropContext` -> The root for all draggable/droppable elements  
+`Draggable` -> A wrapper for elements that require the draggable functionality  
+`Droppable` -> A wrapper for elements that are able to receive draggables
+
+First we will need to remove the `DragDropContext` that exists inside the `CardList Component`. This is because we are going to move the `DragDropContext` to
+the board as the board is going to need to implement `Draggable` and `Droppable`
+
+We will then wrap the card list container up with the `Droppable` component. This will let cards drop onto the container 
+
+Next the card lists will now need to be wrapped up with the `Draggable` component  Because we want to make our `<CardList \>` components draggable, 
+we will need to also include a listId for each card in the listsData property. With the listId, we will be able to identify which card list is being moved
+
+Finally we should include the `DragDropContext` component as far up the  HTML tree as possible. 
+The best place for this is wrapping it around the `Droppable` component
+
+Now that the drag and drop is done, we will need to update the `listsData` that is passed into the `Board`
+We will need to add an `id` property to the `listsData` objects so we can uniquely identify each dragging card list
+
+We should now have the ability to move card lists around and cards between card lists. Note, they **DO NOT** save their positions, we will get to that in
+another chapter
+ 
+
+
+
+## Steps 
+### Wireframe/Design 
+* Design 
+*  
+
+### Component 
+#### Structure
+The board should contain a name and a container that can hold a bunch of card lists
+
+* Component
+    * Board name
+    * `DragDropContext`
+        * `Droppable`
+            * CardList container
+                * `Draggable`
+                    * <card-list.component.tsx\>
+                * `Draggable`
+                    * ...
+                * `Draggable`
+                    * <card-list.component.tsx\>
+
+
+***
+
+### Story 
+We should have a single board component that has dynamic props which are editable using storybook knobs
+
+The card lists should also be moveable and should only land within the card list container
+
+***
+
+### Unit Test
+* We will add a proptypes unit test to the Board component
+    * name
+    * listsData
+
+* The listsData prop should be an optional prop
+
+* The lists data should be an array that contains an object with the following keys
+    * id
+    * name
+    * cards (array)
+        * id
+        * name
+
+* Test what we should render when the listsData that is passed in is
+    * Valid - Print the list to the screen
+    * Invalid - Skip the list with invalid data
+    * Mixed - Print valid and skip invalid
+    
+
+***
+
+### BDD Test 
+* When we load the Board to the screen,
+We will see the board name and
+We will see 2 card lists and
+Each list will have 2 cards each
+
+    Given I have a Board
+    When I look at it
+    Then I should see the name of the board
+    And I should see 2 card lists with the names of 'List 1' and 'List 2'
+    And 2 Cards on each list with the names of 'Card 1', 'Card 2', 'Card 3' and 'Card 4'
