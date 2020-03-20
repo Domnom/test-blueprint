@@ -1,0 +1,24 @@
+import React from 'react';
+import { checkProps } from '../../common/utils/test-helpers';
+
+import Card from './card.component';
+
+describe("CardComponent", () => {
+
+    describe("Checking prop types", () => {
+
+        it ("Should not throw any warnings", () => {
+
+            const expectedProps = {
+                name : "card name"
+            }
+
+            const propErrors = checkProps(Card, expectedProps);
+
+            expect(propErrors).toBeUndefined();
+
+        })
+
+    })
+
+})
