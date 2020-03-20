@@ -1,0 +1,49 @@
+# Card Component (Scene for a visual component)
+
+
+## Steps 
+### Wireframe/Design 
+We want the display to be a rectangular box with text inside
+
+***
+
+### Component 
+#### Structure
+* div
+    * card name
+
+#### Properties
+* name - Allows us to dynamically set the value of the card name
+
+#### States
+There are no states other than default
+
+#### Actions
+There are no actions for this component
+
+***
+
+### Story 
+We want to see the card in its default state and be able to modify
+the content of the card name using storybook knobs
+
+*** 
+
+### Unit Test 
+No unit tests are required right now
+
+***
+
+### BDD Test 
+* We want to test if the card that we have created presents some
+sort of text to the screen for the client to see. This should be
+the default behaviour
+
+    Given I have a card  
+    When I look at it  
+    Then I should see the card name
+
+*** 
+## Card Container 
+### Redux 
+Not required
