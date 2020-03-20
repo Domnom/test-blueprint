@@ -1,0 +1,74 @@
+import {
+    ValidationException
+} from './validation.exception';
+
+describe("ValidationException", () => {
+
+    describe("Basic", () => {
+
+        it ("Should create a new exception with no error messages", () => {
+            const validationException: ValidationException = new ValidationException();
+
+            expect(validationException.getStatus()).toBe(422);
+            expect(validationException.getResponse()).toEqual({
+                message : "Validation Error"
+            })
+        })
+
+    })
+
+    describe("Advanced", () => {
+
+        it ("Should create a detailed exception when 1 property is invalid", () => {
+
+            const error = {
+                property : "email",
+                value : "notanemail",
+                constraints: {
+                    isEmail : "The email isn't valid"
+                }
+            }
+
+            const validationException = new ValidationException(error);
+
+            expect(validationException.getResponse()).toMatchObject({
+                message : "Validation Error",
+                errors : [
+                    {
+                        ...error
+                    }
+                ]
+            })
+
+        });
+
+        it ("Should create a detailed exception when 2 or more properties are invalid", () => {
+            
+            const errors = [
+                {
+                    property : "firstname",
+                    value : "This is a really long name",
+                    constraints : {
+                        length : "The name is too long!"
+                    }
+                },
+                {
+                    property: "email",
+                    value : "notanemail",
+                    constraints: {
+                        isEmail : "The email isn't valid"
+                    }
+                }
+            ]
+
+            const validationException = new ValidationException(errors);
+
+            expect(validationException.getResponse()).toMatchObject({
+                message : "Validation Error",
+                errors : errors
+            })
+        });
+
+    })
+
+})
