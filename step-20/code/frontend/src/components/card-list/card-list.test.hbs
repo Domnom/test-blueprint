@@ -1,0 +1,159 @@
+import React from 'react';
+import { checkProps } from '../../common/utils/test-helpers';
+import { render, RenderResult } from '@testing-library/react';
+
+{{partial_1}}import CardList from './card-list.component';
+
+import { DragDropContext } from 'react-beautiful-dnd';
+
+describe("CardListComponent", () => {
+
+    describe("Checking prop types", () => {
+
+        it ("Should not throw any warnings", () => {
+
+            const expectedProps = {
+                listId: 1,
+                name : "card name",
+                cardsData : [
+                    {
+                        id : 1,
+{{partial_2}}                        name: "Card 1"
+                    },
+                    {
+                        id : 2,
+{{partial_3}}                        name : "Card 2"
+                    }
+                ]
+            }
+
+            const propErrors = checkProps(CardList, expectedProps);
+
+            expect(propErrors).toBeUndefined();
+
+        })
+
+        it ("Should throw warnings when there are missing required properties", () => {
+
+            const expectedProps = {};
+
+            const propErrors = checkProps(CardList, expectedProps);
+
+            expect(propErrors).toBeDefined();
+        })
+
+        it ("Should catch the required listId prop", () => {
+
+            const expectedProps = {
+                name : "card name"
+            }
+            const propErrors = checkProps(CardList, expectedProps);
+
+            expect(propErrors).toBeDefined();
+
+        });
+
+        it ("Should catch the required name prop", () => {
+
+            const expectedProps = {
+                listId : 1
+            }
+            const propErrors = checkProps(CardList, expectedProps);
+
+            expect(propErrors).toBeDefined();
+
+        });
+
+    })
+
+    describe("Render", () =>{
+
+
+        it ("Should render without errors with no cardData", () => {
+
+            const renderedComponent: RenderResult = render(
+                <DragDropContext onDragEnd={() => {}}>
+                    <CardList listId={1} name="Card list"/>
+                </DragDropContext>
+            )
+
+            const cardContainerDiv: HTMLElement = renderedComponent.getByTestId('cardList.cardContainer');
+
+            expect(cardContainerDiv.childElementCount).toBe(0);
+        })
+
+        it ("Should render without errors with valid cardData", () => {
+
+            const cardData: any = [
+                {
+                    id : 1,
+{{partial_4}}                    name : "Card 1"
+                },
+                {
+                    id : 2,
+{{partial_5}}                    name : "Card 2"
+                }
+            ]
+            const renderedComponent: RenderResult = render(
+                <DragDropContext onDragEnd={() => {}}>
+                    <CardList listId={1} name="Card list" cardsData={cardData}/>
+                </DragDropContext>
+            )
+
+            const card1Div = renderedComponent.getByText(cardData[0].name);
+            const card2Div = renderedComponent.getByText(cardData[1].name);
+
+            // expect(card1Div).toBeDefined();
+            // expect(card2Div).toBeDefined();
+
+        })
+
+        it ("Should render without errors with invalid cardData", () => {
+
+            const cardData: any = [
+                {
+                    invalidKey : "Card 1"
+                },
+                {
+                    randomProperty : "Card 2"
+                }
+            ]
+            const renderedComponent: RenderResult = render(
+                <DragDropContext onDragEnd={() => {}}>
+                    <CardList listId={1} name="Card list" cardsData={cardData}/>
+                </DragDropContext>
+            )
+
+            const card1Div = renderedComponent.queryByText(cardData[0].invalidKey);
+            const card2Div = renderedComponent.queryByText(cardData[1].randomProperty);
+
+            expect(card1Div).toBeNull();
+            expect(card2Div).toBeNull();
+        })
+
+        it ("Should render without errors with half invalid and half valid cardData", () => {
+
+            const cardData: any = [
+                {
+{{partial_6}}                    name: "Card 1"
+                },
+                {
+                    id : 2,
+{{partial_7}}                    name : "Card 2"
+                }
+            ]
+
+            const renderedComponent: RenderResult = render(
+                <DragDropContext onDragEnd={() => {}}>
+                    <CardList listId={1} name="Card list" cardsData={cardData}/>
+                </DragDropContext>
+            )
+
+            const card1Div = renderedComponent.queryByText(cardData[0].name);
+            const card2Div = renderedComponent.getByText(cardData[1].name);
+
+            expect(card1Div).toBeNull();
+        })
+    });
+
+})
