@@ -1,0 +1,23 @@
+                <DragDropContext onDragEnd={() => {}}>
+                    <Droppable
+                        droppableId="board-id" 
+                        type="COLUMN" 
+                        direction="horizontal"
+                    >
+                        {(provided: DroppableProvided) => {
+                            // The data-testid is used by react-testing-library to find the container
+                            return (
+                                <div 
+                                    ref={provided.innerRef}
+                                    className="cardListContainer"
+                                    data-testid="board.cardListContainer"
+                                >
+                                    {cardListComponents}
+
+                                    {/* This will allow the other draggables to reposition themselves to allow a gap for the card we are dragging  */}
+                                    {provided.placeholder}
+                                </div>
+                            )
+                        }}
+                    </Droppable>
+                </DragDropContext>
