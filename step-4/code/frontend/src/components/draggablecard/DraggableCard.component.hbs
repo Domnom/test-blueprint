@@ -1,0 +1,79 @@
+/** 
+ * @class DraggableCard
+ * @namespace components 
+ * @description 
+ * @author Nick Mitchell
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { findDOMNode } from 'react-dom';
+import { DragSource } from 'react-dnd';
+import { getEmptyImage } from 'react-dnd-html5-backend';
+
+/**
+ * @requires Components
+ */
+import Card from '../card/card.component';
+
+/**
+ * @requires Assets
+ */
+
+
+/**
+ * @param {TProperty} TProperty 
+ */
+type TProperty = {
+    
+}
+/**
+ * @param {TState} TState
+ */
+type TState = {
+
+}
+
+/**
+ * DraggableCard 
+ *
+ * @class DraggableCard
+ * @extends {React.Component<TProperty, TState>}
+ */
+class DraggableCard extends React.Component<TProperty, TState> {
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+        
+    }
+
+    /**
+     * Get drag styles 
+     *
+     * @param {boolean} isDragging
+     * @returns
+     * @memberof DraggableCard
+     */
+    getStyles(isDragging:boolean) {
+        return {
+            display: isDragging ? 0.5 : 1
+        };
+    }
+
+    /**
+     * Render the DraggableCard 
+     *
+     * @returns {JSX} component 
+     * @memberof DraggableCard
+     */
+    render() {
+
+        return (
+            <div></div>
+        );
+    }
+
+}
+
+export default DraggableCard;
