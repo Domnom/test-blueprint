@@ -1,0 +1,159 @@
+const letters: string[] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+                           'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']; 
+
+
+/**
+ * @description Generates a string that is either smaller or larger based on the supplied params. Useful for sorting
+ * @param {string} startPosition The string we need a greater value than
+ * @param {string} endPosition The string we need a lesser value than
+ */
+const generatePosition = (startPosition?: string, endPosition?: string): string => {
+    
+    // -- We will need to find the value between the two values
+    if (startPosition && endPosition)
+    {
+        // -- Resort the order
+        if (startPosition.localeCompare(endPosition) === 1)
+        {
+            const swapStartTemp = startPosition;
+            startPosition = endPosition;
+            endPosition = swapStartTemp;
+        }
+
+        if (startPosition.length === 1 && endPosition.length === 1)
+        {
+            // -- If we have the same characters then we need to move to the next level
+            if (startPosition == endPosition)
+            {
+                return startPosition + "n";
+            }
+            // -- We will need to get the middle letter
+            else
+            {
+                const startPositionIndex = letters.indexOf(startPosition);
+                const endPositionIndex = letters.indexOf(endPosition);
+                const positionIndexDifference = Math.abs(startPositionIndex - endPositionIndex);
+                
+
+                if (positionIndexDifference == 1)
+                {
+                    // -- There is no letter between these letters so lets return the base 'n'
+                    if (startPosition === "y" && endPosition === "z")
+                    {
+                        return endPosition + "n";
+                    }
+                    return startPosition + "n";
+                }
+                else
+                {
+                    return letters[startPositionIndex + Math.ceil((positionIndexDifference - 1) / 2)];
+                }
+            }
+        }
+        else
+        {
+            if (startPosition.length > 1 && endPosition.length === 1)
+            {
+                const endPositionIndex = letters.indexOf(endPosition);
+                const startPositionIndex = letters.indexOf(startPosition[0]);
+                const difference = Math.abs(startPositionIndex - endPositionIndex);
+
+                if (difference <= 1)
+                {
+                    return startPosition[0] + generatePosition(startPosition.slice(1), 'z');
+                }
+                else
+                {
+                    return generatePosition(startPosition[0], endPosition[0]);
+                }
+            }
+            else if (startPosition.length === 1 && endPosition.length > 1)
+            {
+                const endPositionIndex = letters.indexOf(endPosition[0]);
+                const startPositionIndex = letters.indexOf(startPosition);
+                const difference = Math.abs(startPositionIndex - endPositionIndex);
+
+                if (difference <= 1)
+                {
+                    return endPosition[0] + generatePosition('a', endPosition.slice(1));
+                }
+                else
+                {
+                    return generatePosition(startPosition[0], endPosition[0]);
+                }
+            }
+            else
+            {
+                // more than 2 characters in both start and end positions
+                let startPositionIndex = letters.indexOf(startPosition[0]);
+                let endPositionIndex = letters.indexOf(endPosition[0]);
+                let difference = Math.abs(startPositionIndex - endPositionIndex);
+
+                if (difference === 0)
+                {
+                    return startPosition[0] + generatePosition(startPosition.slice(1), endPosition.slice(1));
+                }
+                else if (difference === 1)
+                {
+                    let sliceHere = 1;
+                    let prependThisString = startPosition[0];
+                    for (let i = 1; i < startPosition.length; i++)
+                    {
+                        if (endPosition[i])
+                        {
+                            const diff = Math.abs(letters.indexOf(startPosition[i]) - letters.indexOf(endPosition[i]));
+                            if (diff <= 1)
+                            {
+                                prependThisString += startPosition[i];
+                                sliceHere = i + 1;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    return prependThisString + generatePosition(startPosition.slice(sliceHere), endPosition.slice(sliceHere));
+                }
+                else
+                {
+                    return generatePosition(startPosition[0], endPosition[0]);
+                }
+
+            }
+        }
+    }
+    else
+    {
+        if (startPosition && !endPosition)
+        {
+            // -- Work out the position after the start position
+            if (startPosition[0] === "z")
+            {
+                // -- We will need to go up a level
+                return startPosition[0] + generatePosition(startPosition.slice(1));
+            }
+            else
+            {
+                // -- Generate the middle letter 
+                return generatePosition(startPosition[0], 'z');
+            }
+        }
+        else if (!startPosition && endPosition)
+        {
+            // -- Work out the position before the end position
+            if (endPosition[0] === "a")
+            {
+                return endPosition[0] + generatePosition(null, endPosition.slice(1));
+            }
+            else
+            {
+                return generatePosition('a', endPosition[0]);
+            }
+        }
+    }
+
+    return 'n';
+}
+
+export { generatePosition };
