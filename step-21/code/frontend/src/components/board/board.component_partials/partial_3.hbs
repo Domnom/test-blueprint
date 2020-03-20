@@ -1,0 +1,6 @@
+        /**
+         * @description First clean the listsData to ensure theres all required properties
+         */
+        listsDataOrdered = listsDataOrdered.filter((listData: TListData) => {
+            return listData.id && listData.name && listData.position;
+        });
