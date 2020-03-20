@@ -1,0 +1,25 @@
+                {/* Adding DragDropContext here as all our droppables and draggables should only exist beyond this point */}
+                <DragDropContext
+                    onDragEnd={({ draggableId, source, destination, type }) => {}}
+                >
+                    {/* We will be setting the cardContainer as the drop zone for all cards. This will also require a function to be run by the Droppable Component */}
+                    <Droppable
+                        droppableId="dropzone"
+                    >
+                        {(provided: DroppableProvided) => {
+                            return (
+                                <div 
+                                    className="cardContainer" 
+                                    data-testid="cardList.cardContainer"
+                                    ref={provided.innerRef}
+                                >
+                                    {/* Here we use curly brackets the same way we do with properties, only this time we are inserting an array */}
+                                    {cardComponents}
+
+                                    {/* This will allow the other draggables to reposition themselves to allow a gap for the card we are dragging  */}
+                                    {provided.placeholder}
+                                </div>
+                            )
+                        }}
+                    </Droppable>
+                </DragDropContext>
