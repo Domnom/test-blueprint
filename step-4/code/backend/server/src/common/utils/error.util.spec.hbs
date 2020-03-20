@@ -1,0 +1,324 @@
+import {
+    errorTransformer,
+    validationErrorTransformer,
+    queryFailedErrorTransformer
+} from './error.util';
+
+import {
+    HttpException,
+    InternalServerErrorException,
+    NotFoundException as NestJsNotFoundException,
+    ImATeapotException
+} from '@nestjs/common'
+
+import {
+    QueryFailedError
+} from 'typeorm'
+
+/**
+ * @import Exceptions
+ */
+import { 
+    NotFoundException,
+    NotUniqueException
+} from '../http/exceptions/index';
+import { ValidationError } from 'class-validator';
+
+
+/**
+ * QueryFailedError objs faked out so we can test.
+ * postgres => https://www.postgresql.org/docs/9.4/errcodes-appendix.html
+ */
+const queryFailedErrors = {
+    'unique_violation_single' : new QueryFailedError(
+        "INSERT INTO \"users\"(\"username\", \"firstname\", \"surname\", \"email\", \"password\", \"bio\", \"joined\", \"email_verified\", \"account_type\", \"instagram\", \"twitter\", \"facebook\", \"github\", \"website\", \"phone\", \"isOnline\", \"lastOnline\") VALUES ($1, $2, $3, $4, $5, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT) RETURNING \"id\", \"email_verified\", \"account_type\", \"isOnline\"",
+        [
+            "jdoe",
+            "John",
+            "Doe",
+            "john.doe@email.com",
+            "abc123"
+        ],
+        {
+            "message": "duplicate key value violates unique constraint \"UQ_97672ac88f789774dd47f7c8be3\"",
+            "length": 243,
+            "severity": "ERROR",
+            "code": "23505",
+            "detail": "Key (email)=(john.doe@email.com) already exists.",
+            "schema": "public",
+            "table": "users",
+            "constraint": "UQ_97672ac88f789774dd47f7c8be3",
+            "file": "nbtinsert.c",
+            "line": "535",
+            "routine": "_bt_check_unique"
+        }        
+    ),
+    'unique_violation_composite' : new QueryFailedError(
+        "INSERT INTO \"users\"(\"username\", \"firstname\", \"surname\", \"email\", \"password\", \"bio\", \"joined\", \"email_verified\", \"account_type\", \"instagram\", \"twitter\", \"facebook\", \"github\", \"website\", \"phone\", \"isOnline\", \"lastOnline\") VALUES ($1, $2, $3, $4, $5, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT) RETURNING \"id\", \"email_verified\", \"account_type\", \"isOnline\"",
+        [
+            "jdoe",
+            "John",
+            "Doe",
+            "john.doe@email.com",
+            "abc123"
+        ],
+        {
+            "message": "duplicate key value violates unique constraint \"UQ_772886e2f1f47b9ceb04a06e203\"",
+            "length": 262,
+            "severity": "ERROR",
+            "code": "23505",
+            "detail": "Key (username, email)=(jdoe, john.doe@email.com) already exists.",
+            "schema": "public",
+            "table": "users",
+            "constraint": "UQ_772886e2f1f47b9ceb04a06e203",
+            "file": "nbtinsert.c",
+            "line": "535",
+            "routine": "_bt_check_unique"
+        }
+    ),
+    'random' : new QueryFailedError(
+        "random query",
+        [],
+        {
+            message : "This is a random error",
+            code: "0000"
+        }
+    ),
+    'nocode' : new QueryFailedError(
+        "no code query",
+        [],
+        {
+            message : "No code here as a property"
+        }
+    )
+}
+
+
+const validationErrors = {
+    email : {
+        isEmail : (): ValidationError => {
+            const validationError = new ValidationError();
+                validationError.target = {
+                    username : "jdoe",
+                    firstname : "John",
+                    surname : "Doe",
+                    email: "notanemail",
+                    password : "abc123"
+                }
+                validationError.value = validationError.target["email"];
+                validationError.property = "email";
+                validationError.children = [];
+                validationError.constraints = {
+                    isEmail: "The email isn't valid"
+                }
+            return validationError;
+        }
+    },
+    username : {
+        isLength : (): ValidationError => {
+            const validationError = new ValidationError();
+                validationError.target = {
+                    username : "thisisareallylongusername",
+                    firstname : "John",
+                    surname : "Doe",
+                    email: "john.doe@email.com",
+                    password : "abc123"
+                }
+                validationError.value = validationError.target["username"];
+                validationError.property = "username";
+                validationError.children = [];
+                validationError.constraints = {
+                    isLength: "The username is too long"
+                }
+            return validationError;
+        }
+    }
+}
+
+
+describe("Error Util", () => {
+
+    describe("validationErrorTransformer", () => {
+
+        it ("Should handle general validation errors generated by the class-validator library by creating a ValidationException", () => {
+
+            const error = validationErrors.email.isEmail();
+            
+
+            const exception: HttpException = validationErrorTransformer(error);
+
+            expect(exception.getResponse()).toMatchObject({
+                message : "Validation Error",
+                errors: [
+                    {
+                        property: "email",
+                        value: error.target["email"],
+                        constraints : {
+                            ...error.constraints
+                        }
+                    }
+                ]
+            })
+        })
+
+        it ("Should handle multiple validation errors and return a ValidationException", () => {
+
+            const errors = [
+                validationErrors.email.isEmail(),
+                validationErrors.username.isLength()
+            ]
+
+            const exception: HttpException = validationErrorTransformer(errors);
+
+            expect(exception.getResponse()).toMatchObject({
+                message : "Validation Error",
+                errors: [
+                    {
+                        property: "email",
+                        value: errors[0].target["email"],
+                        constraints : {
+                            ...errors[0].constraints
+                        }
+                    }, 
+                    {
+                        property: "username",
+                        value: errors[1].target["username"],
+                        constraints : {
+                            ...errors[1].constraints
+                        }
+                    }
+                ]
+            })
+        })
+
+    })
+
+    describe("queryFailedErrorTransformer", () => {
+
+        describe("unique_violation (code - 23505)", () => {
+            it ("Should handle a single unique error", () => {
+
+                const exception: HttpException = queryFailedErrorTransformer(queryFailedErrors.unique_violation_single);
+
+                expect(exception).toBeInstanceOf(NotUniqueException)
+
+                expect(exception.getResponse()).toMatchObject({
+                    errors : [
+                        {
+                            property : "email",
+                            value: "john.doe@email.com",
+                            message : "The value for the property 'email' is not unique"
+                        }
+                    ]
+                })
+            })
+
+            it ("Should handle a composite unique error", () => {
+                const exception: HttpException = queryFailedErrorTransformer(queryFailedErrors.unique_violation_composite);
+
+                expect(exception).toBeInstanceOf(NotUniqueException)
+
+                expect(exception.getResponse()).toMatchObject({
+                    errors : [
+                        {
+                            property: "username",
+                            value: "jdoe",
+                            message: "The value for the property 'username' is not unique"
+                        },
+                        {
+                            property : "email",
+                            value: "john.doe@email.com",
+                            message : "The value for the property 'email' is not unique"
+                        }
+                    ]
+                })
+            })
+        })
+        
+
+        describe("Unhandled", () => {
+            it ("Should handle with an InternalServerError", () => {
+
+                const exception: HttpException = queryFailedErrorTransformer(queryFailedErrors.random);
+    
+                expect(exception).toBeInstanceOf(InternalServerErrorException);
+    
+            })
+        })
+
+        describe("Invalid arguments", () => {
+            
+            it ("Should handle a QueryFailedError that does not contain a 'code' property", () => {
+
+                const exception: HttpException = queryFailedErrorTransformer(queryFailedErrors.nocode);
+    
+                expect(exception).toBeInstanceOf(InternalServerErrorException);
+    
+            })
+        })
+
+    })
+
+
+    describe("errorTransformer", () => {
+
+        it ("Should handle a NotFoundException (nestjs/common)", () => {
+
+            const nestjsNotFoundException = new NestJsNotFoundException();
+
+            const errorException: NotFoundException = errorTransformer(nestjsNotFoundException);
+
+            expect(errorException.getStatus()).toBe(404);
+            expect(errorException.getResponse()).toEqual({
+                message : "Not Found"
+            })
+
+        })
+
+        it ("Should handle a ValidationError (class-validator)", () => {
+
+            const error = validationErrors.email.isEmail();
+            
+            const exception: HttpException = errorTransformer([error]);
+
+            expect(exception.getResponse()).toMatchObject({
+                message : "Validation Error",
+                errors: [
+                    {
+                        property: "email",
+                        value: error.target["email"],
+                        constraints : {
+                            ...error.constraints
+                        }
+                    }
+                ]
+            })
+
+        })
+
+        it ("Should handle a QueryFailedError (typeorm)", () => {
+            const exception: HttpException = errorTransformer(queryFailedErrors.unique_violation_single);
+
+            expect(exception).toBeInstanceOf(NotUniqueException)
+
+            expect(exception.getResponse()).toMatchObject({
+                errors : [
+                    {
+                        property : "email",
+                        value: "john.doe@email.com",
+                        message : "The value for the property 'email' is not unique"
+                    }
+                ]
+            })
+        });
+
+        it ("Should return a teapot as a default", () => {
+            
+            const exception: any = errorTransformer(null);
+
+            expect(exception).toBeInstanceOf(ImATeapotException);
+        })
+
+    })
+
+})
