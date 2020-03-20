@@ -1,0 +1,10 @@
+export {
+    CardList
+}
+
+
+export default React.forwardRef((props: TProperty, ref: React.RefObject<any>) => {
+    return (
+        <CardList ref={ref} {...props} />
+    )
+});
