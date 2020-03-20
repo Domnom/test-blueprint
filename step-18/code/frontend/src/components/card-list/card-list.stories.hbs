@@ -1,0 +1,65 @@
+/** 
+ * @class CardList Stories 
+ * @namespace stories 
+ * @description 
+ * @author Nick Mitchell
+ */
+
+import React from 'react';
+import { storiesOf } from '@storybook/react';
+import centeredAddon from '@storybook/addon-centered';
+import {
+    withKnobs,
+    text as textAddon,
+    object as objectAddon
+} from '@storybook/addon-knobs';
+{{partial_1}} 
+
+/**
+ * @name Component
+ * @requires import 
+ */
+import CardList from './card-list.component';
+
+
+/**
+ * Story Category
+ * @param {String} categoryName - the tab name 
+ * @param {NodeModule} module - no diea what this does? 
+ */
+const stories = storiesOf('Components/CardList', module)
+                    .addDecorator(centeredAddon)
+                    .addDecorator(withKnobs);
+
+/** 
+ * Stories 
+ * @name add 
+ * @param {string} storyName - story name which is the name of the tab 
+ * @param {Function:JSX.Element} fn - returns the react element 
+ */
+stories
+    .add('default', ()=>{
+
+        let name = textAddon("name", "Card list");
+
+        let cardsData = objectAddon('cardsData', [
+            {
+                id: 1,
+                name: "Card 1"
+            },
+            {
+                id: 2,
+                name: "Card 2"
+            }
+        ]);
+
+
+{{partial_2}}                    name={name}
+                    cardsData={cardsData}
+{{partial_3}}    },
+    {
+        notes: `#CardList
+            CardList needs items and style overrides
+        `
+    })
+    
