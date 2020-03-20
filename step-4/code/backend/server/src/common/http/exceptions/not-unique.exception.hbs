@@ -1,0 +1,66 @@
+import {
+    UnprocessableEntityException
+} from '@nestjs/common'
+
+import {
+    ApiModelProperty
+} from '@nestjs/swagger';
+
+type TNotUniqueExceptionError = {
+    property: string;
+    value: any;
+    message: string;
+}
+
+/**
+ * Used when a duplicate entry is found in the database and returns the properties 
+ * that have unique issues
+ *
+ * @export
+ * @class NotUniqueException
+ * @extends {UnprocessableEntityException}
+ */
+export class NotUniqueException extends UnprocessableEntityException {
+
+    @ApiModelProperty({
+        description: "A message describing the error",
+        default: "Not Unique Error",
+        example: "Not Unique Error"
+    })
+    message : string;
+
+    @ApiModelProperty({
+        description: "An array of errors with property and value that cause the duplication error",
+        example: [
+            {
+                property: "name",
+                value : "John",
+                message : "The value for the property 'name' is not unique"
+            }
+        ]
+    })
+    errors: TNotUniqueExceptionError[];
+
+    constructor(errors? : { property: string, value: any } | { property: string, value: any}[])
+    {
+        let errorBody: {message: string, errors?: TNotUniqueExceptionError[]} = {
+            message : "Not Unique Error"
+        }
+        if (errors)
+        {
+            if (!Array.isArray(errors))
+            {
+                errors = [errors];
+            }
+    
+            errorBody.errors = errors.map((error) => {
+                return {
+                    ...error,
+                    message : "The value for the property '" + error.property + "' is not unique"
+                }
+            });
+        }
+        super(errorBody);
+    }
+
+}
