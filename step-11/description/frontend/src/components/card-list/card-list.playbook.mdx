@@ -1,0 +1,36 @@
+# CardList Component (Scene for a visual component)
+The CardList component will be our container that holds many cards. For now we will create a basic 
+version of what we are after
+
+## Steps 
+### Wireframe/Design 
+This should be a vertical list that has a a list name and a container for storing cards
+
+### Component 
+#### Structure
+* Component
+    * List name
+    * Card container
+        * <card.component.tsx\>
+        * ...
+        * <card.component.tsx\>
+
+***
+
+### Story 
+We will print out the CardList as it is defined in the component. No dynamic properties
+
+***
+
+### BDD Test 
+* When we load the CardList to the screen, 
+we will see the list name and
+we will see 2 Card components with text of "Card 1" and "Card 2"
+
+    Given I have a CardList
+    When I look at it
+    Then I should see the name of the list
+    And I should see 2 cards with the names of 'Card 1' and 'Card 2'
+
+## CardList Container 
+### Redux
