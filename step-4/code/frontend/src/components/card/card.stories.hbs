@@ -1,0 +1,47 @@
+import React from 'react';
+import { storiesOf } from '@storybook/react';
+{{partial_1}}
+{{partial_2}}import Card from './card.component';
+
+
+/**
+ * @optional Decorator
+ * @param {String} categoryName - the tab name 
+ * @param {Function:JSX.Element} storyFn - story function that returns JSX Element 
+ */
+{{partial_3}}
+{{partial_4}}
+    return (<section>
+        {storyFn()}
+    </section>)
+}
+
+/**
+ * Story Category
+ * @param {String} categoryName - the tab name 
+ * @param {NodeModule} module - no diea what this does? 
+ */
+const stories = storiesOf('Components/Card', module);
+
+/** 
+ * Stories 
+ * @name add 
+ * @param {string} storyName - story name which is the name of the tab 
+ * @param {Function:JSX.Element} fn - returns the react element 
+ */
+stories
+    .addDecorator(withKnobs) // <--- add knobs 
+    .addDecorator(ReduxDecorator) // <--- this is optional 
+{{partial_5}}        };
+{{partial_6}}
+{{partial_7}}
+{{partial_8}}
+{{partial_9}}    })
+{{partial_10}}
+{{partial_11}}
+{{partial_12}}    })
+{{partial_13}}    })
+{{partial_14}}    })
+{{partial_15}}    })
+
+{{partial_16}}
