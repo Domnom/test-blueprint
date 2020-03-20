@@ -1,0 +1,25 @@
+        // -- Create the array of <Card /> components
+        let cardComponents: JSX.Element[] = [];
+
+        // -- Because cardsData is optional, we will need to check if the property exists
+        if (this.props.cardsData)
+        {
+            // -- We will use the build-in array function "map" to iterate over every object inside the cardsData array.
+            //    This will return us a new array with the Card components ready to use
+            cardComponents = this.props.cardsData.map((cardData, cardIndex): JSX.Element => {
+
+                // -- Before creating the Card component, we will need to check if the 
+                //    name property exists inside cardData
+                if (cardData.hasOwnProperty('name'))
+                {
+                    // -- Because we are returning an array of Cards, we will also need to supply a required React property "key" 
+                    //    (any value that uniquely identifies each item within this array) so for now, we will use the array index
+                    return <Card 
+                                key={cardIndex}
+                                name={cardData.name}
+                            />;
+                }
+
+            })
+        }
+
