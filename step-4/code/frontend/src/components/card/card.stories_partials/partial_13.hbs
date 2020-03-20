@@ -1,0 +1,10 @@
+    stories.add('design', ()=>{
+        const url = textAddOn('Design Url', 'https://designcode.io/images/Angle/Plugin-Video.jpg', 'Design');
+        const isPicture = booleanAddOn('Display as Image (or iFrame)', true, 'Options');
+    
+        if(isPicture){
+            return (<img src={url} />)
+        }
+        else{
+            return (<iframe style={{width: '100%', height:'100%'}} src={url} />)
+        }
