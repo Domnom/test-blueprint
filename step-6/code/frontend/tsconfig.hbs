@@ -1,0 +1,56 @@
+{
+    "compilerOptions": {
+
+{{partial_1}}        "outDir": "./dist/",
+
+{{partial_2}}        "sourceMap": true,
+
+{{partial_3}}        "noImplicitAny": false,
+
+{{partial_4}}        "module": "commonjs",
+
+{{partial_5}}        "target": "es6",
+
+{{partial_6}}        "jsx": "react",
+
+{{partial_7}}        "esModuleInterop" : true,
+
+{{partial_8}}        "allowJs": true,
+
+{{partial_9}}        "moduleResolution": "node",
+        
+{{partial_10}}        "allowSyntheticDefaultImports": true,
+
+{{partial_11}}        "typeRoots" : [
+            "./node_modules/@types",
+            "./@types"
+        ],
+
+{{partial_12}}        "strict": false,
+
+{{partial_13}}        "strictNullChecks": false,
+
+{{partial_14}}        "resolveJsonModule": true, 
+
+{{partial_15}}        "baseUrl": "./",
+
+{{partial_16}}        "paths": {
+            "@config/*":        ["src/config/*"], 
+            "@common/*":        ["src/common/*"], 
+            "@components/*":    ["src/components/*"], 
+            "@services/*":      ["src/services/*"],
+            "@models/*":        ["src/models/*"],
+            "@enums/*":         ["src/enums/*"],
+            "@errors/*":        ["src/models/errors/*"],
+            "@redux/*":         ["src/redux/*"],
+            "@mocks/*":         ["test/mocks/*"],
+            "@utils/*":         ["src/utils/*"],
+            "@assets/*":         ["src/assets/*"]
+        },
+{{partial_17}}        "rootDirs": [
+            "src"
+        ]
+    },
+
+{{partial_18}}    "exclude": ["node_modules"]
+}
