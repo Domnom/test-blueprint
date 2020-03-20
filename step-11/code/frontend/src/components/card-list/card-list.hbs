@@ -1,0 +1,9 @@
+Feature: CardList
+
+    The CardList component
+
+    Scenario: The CardList is mounted to screen
+        Given I have a CardList
+        When I look at it
+        Then I should see the name of the list
+        And I should see 2 cards with the names of 'Card 1' and 'Card 2'
