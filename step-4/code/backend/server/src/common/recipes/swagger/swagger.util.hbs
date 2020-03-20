@@ -1,0 +1,40 @@
+const yarn = require('package.json');
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+/**
+ * @import Modules
+ */
+
+
+export class SwaggerUtil{
+
+	static buildSwagger(app){
+
+	  	const options = new DocumentBuilder()
+			.setTitle('Backend Instagram')
+			.setDescription('This is the backend server for Instagram (clone)')
+			// .setVersion('2.0')
+			.setVersion(yarn.version)
+			.setBasePath('/')
+			.setSchemes('https', 'http')
+			// .addBearerAuth()
+			.build();
+
+	    const swaggerDoc = SwaggerModule.createDocument(
+	    	app, 
+	    	options, 
+	    	SwaggerUtil.includeModules()
+	    );
+	    SwaggerModule.setup('/docs', app, swaggerDoc);
+
+	}
+
+	static includeModules(){
+		return { 
+	    	include: [
+                
+	    	] 
+	    }
+	}
+
+}
