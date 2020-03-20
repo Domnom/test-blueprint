@@ -1,0 +1,9 @@
+                    {(provided: DroppableProvided) => {
+                        return (
+                            <div 
+                                className="cardContainer" 
+                                data-testid="cardList.cardContainer"
+                                ref={provided.innerRef}
+                            >
+                                {/* Here we use curly brackets the same way we do with properties, only this time we are inserting an array */}
+                                {cardComponents}
