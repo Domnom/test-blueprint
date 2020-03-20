@@ -1,0 +1,62 @@
+#!/bin/bash 
+{{partial_1}}varRoot=./
+read varRoot
+echo Opening the directory: $varRoot 
+
+#
+# @description change to dir 
+# @tutorial https://stackoverflow.com/questions/3349105/how-to-set-current-working-directory-to-the-directory-of-the-script 
+#
+cd $varRoot
+ls 
+pwd 
+
+
+
+#
+{{partial_2}}#
+{{partial_3}}
+{{partial_4}}
+
+#
+{{partial_5}}#
+{{partial_6}}json -I -f package.json -e 'this.husky={}'
+json -I -f package.json -e 'this.husky.hooks={}'
+json -I -f package.json -e 'this.husky.hooks["pre-commit"]="yarn test"' 
+json -I -f package.json -e 'this.husky.hooks["pre-push"]="yarn test"' 
+json -I -f package.json -e 'this.husky.hooks["prepare-commit-msg"]="exec < /dev/tty && git cz --hook || true"' 
+
+
+
+#
+# @name 
+# @description 
+#
+
+
+
+#
+# @name 
+# @description 
+#
+
+
+
+#
+# @name 
+# @description 
+#
+
+
+
+#
+# @name 
+# @description 
+#
+
+
+
+#
+# @name 
+# @description 
+#
