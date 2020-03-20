@@ -1,0 +1,40 @@
+/** 
+ * @class card Stories 
+ * @namespace stories 
+ * @description 
+ * @author Playbook
+ */
+
+import React from 'react';
+import { storiesOf } from '@storybook/react';
+import centeredAddon from '@storybook/addon-centered';
+
+/**
+ * @name Component
+ * @requires import 
+ */
+import Card from './card.component';
+
+/**
+ * Story Category
+ * @param {String} categoryName - the tab name 
+ * @param {NodeModule} module - no diea what this does? 
+ */
+const stories = storiesOf('Components/card', module)
+                    .addDecorator(centeredAddon);
+
+/** 
+ * Stories 
+ * @name add 
+ * @param {string} storyName - story name which is the name of the tab 
+ * @param {Function:JSX.Element} fn - returns the react element 
+ */
+stories.add('Card', ()=>{
+    return (<Card />)
+},
+{
+    notes: `#card
+        card needs items and style overrides
+    `
+})
+    
