@@ -1,0 +1,66 @@
+    constructor(props: any)
+    {
+        super(props);
+
+        this.state = {
+            runGetDerivedState : true,
+            listsData : []
+        }
+    }
+
+    static getDerivedStateFromProps(props: any, state: any)
+    {
+        if (state.runGetDerivedState)
+        {
+            return {
+                ...state,
+                listsData : props.listsData
+            }
+        }
+        else
+        {
+            return {
+                ...state,
+                runGetDerivedState : true
+            }
+        }
+    }
+
+    render()
+    {
+        /**
+         * @description
+         */
+        const childrenWithRefProps = React.Children.map(this.props.children, (child: any) => {
+            // -- Create Ref
+            const cardListRef = React.createRef();
+            this.cardListRefs["list-" + child.props.listId] = cardListRef;
+
+
+            // -- Add ref
+            return React.cloneElement(child, { ...child.props, ref : cardListRef, cardsData: (this.state.listsData.length == 1 ? this.state.listsData[0].cards : []) })
+        })
+        
+        return (
+            <DragDropContext onDragEnd={({ draggableId, source, destination, type }) => { this.onDragEndHandler(draggableId, source, destination, type); }}>
+                {childrenWithRefProps}
+            </DragDropContext>
+        )
+    }
+
+    onDragEndHandler = (
+        draggableId: string, 
+        source: {droppableId: string, index: number}, 
+        destination: {droppableId: string, index: number}, 
+        type: string
+    ) => {
+
+        const newListsData = onDragEndHandler(draggableId, source, destination, type, this.state.listsData, this.cardListRefs);
+
+        this.setState({
+            runGetDerivedState : false,
+            listsData : newListsData
+        });
+    }
+}
+
