@@ -1,0 +1,90 @@
+/** 
+ * @class CardList
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+{{partial_1}}
+/**
+ * @requires Styles
+ */
+import './card-list.styles.css';
+
+
+/**
+ * @requires Components
+ */
+import Card from '../card/card.component';
+
+/**
+ * @required Types
+ */
+type TCardData = {
+{{partial_2}}    name : string;
+}
+
+/**
+ * @param {TProperty} TProperty 
+ */
+type TProperty = {
+    name : string;
+    cardsData? : TCardData[]
+}
+
+/**
+ * @param {TState} TState
+ */
+type TState = {
+
+}
+
+/**
+ * CardList
+ *
+ * @class CardList
+ * @extends {React.Component<TProperty, TState>}
+ */
+class CardList extends React.Component<TProperty, TState> {
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+        name : PropTypes.string.isRequired,
+        cardsData : PropTypes.arrayOf(Object)
+    }
+
+    /**
+     * Render the CardList
+     *
+     * @returns {JSX} component 
+     * @memberof CardList
+     */
+    render() {
+
+{{partial_3}}        let cardComponents: JSX.Element[] = [];
+
+{{partial_4}}        if (this.props.cardsData)
+        {
+{{partial_5}}            cardComponents = this.props.cardsData.map((cardData, cardIndex): JSX.Element => {
+
+{{partial_6}}                {
+{{partial_7}}                }
+
+            })
+        }
+
+        return (
+            <div className="cardListComponent">
+                <div className="cardListName">
+                    { this.props.name }
+                </div>
+{{partial_8}}            </div>
+        );
+    }
+
+}
+
+export default CardList;
