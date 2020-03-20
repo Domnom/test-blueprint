@@ -1,0 +1,51 @@
+version: '3.2'
+
+services:
+
+    # ----------------------------------------
+    # Frontends
+    # ----------------------------------------
+
+    # ----------------------------------------
+    # Backends
+    # ----------------------------------------
+    backend:
+        build:
+            context: ./backend
+            dockerfile: Dockerfile.dev
+        volumes:
+            - ./backend/server:/app
+        expose:
+            - "3002"
+        ports:
+            - 3002:3002
+        environment:
+            PORT: 3002
+            DATABASE_POSTGRES_HOST: "postgresql"
+            DATABASE_POSTGRES_PORT: 5432
+            DATABASE_POSTGRES_USERNAME: "sample"
+            DATABASE_POSTGRES_PASSWORD: "pos092500"
+            DATABASE_POSTGRES_DBNAME: "trello_clone"
+            DATABASE_POSTGRES_CONNECTION_NAME: "DATABASE_POSTGRES_CONNECTION"
+            DATABASE_POSTGRES_SYNC: "true" # -- Set to false for production
+            DATABASE_CONNECTION_TO_USE: "DATABASE_POSTGRES_CONNECTION"
+        depends_on: 
+            - postgresql
+            
+    # ----------------------------------------
+    # Databases
+    # ----------------------------------------
+    postgresql:
+        image: postgres:11
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: sample
+            POSTGRES_PASSWORD: pos092500
+            PGDATA: /sample/pgdata
+        volumes:
+            - trello-postgresql:/sample/
+    
+
+volumes:
+    trello-postgresql:
