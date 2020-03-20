@@ -1,0 +1,67 @@
+# Lerna
+![Original Turorial](https://medium.com/hy-vee-engineering/creating-a-monorepo-with-lerna-yarn-workspaces-cf163908965d)
+
+
+## Steps
+### Setup 
+
+Okay, let’s begin! First, let’s create a new project and set up Lerna.
+
+```
+$ mkdir monorepo
+$ cd monorepo
+$ npx lerna init
+```
+
+### package.json 
+This should create the `package.json` 
+
+```json 
+{
+    "name": "root",
+    "private": true,
+    "devDependencies": {
+        "lerna": "^3.13.1"
+    }
+}
+```
+
+
+1. now replace `name` with your package name: `kitset-instagram-clone`
+2. change `private` to `true`
+3. Add `workspaces` with 
+```json 
+"workspaces": [
+    "packages/*"
+],
+```
+
+Now you should have 
+```json
+{
+    "name": "kitset-instagram-clone",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "devDependencies": {
+        "lerna": "^3.5.1"
+    }
+}   
+```
+
+
+### lerna.json 
+Now replace the `lerna.json` 
+
+```json 
+{
+    "packages": ["packages/*"],
+    "npmClient": "yarn",
+    "useWorkspaces": true,
+    "version": "independent"
+}
+```
+
+
+
