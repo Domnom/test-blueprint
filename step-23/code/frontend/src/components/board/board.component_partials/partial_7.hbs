@@ -1,0 +1,11 @@
+        else
+        {
+            /**
+             * @description Return the same state only return the runGetDerivedState value to default. This is
+             *              incase this.props changes in the future
+             */
+            return {
+                ...state,
+                runGetDerivedState : true
+            }
+        }
