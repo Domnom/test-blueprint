@@ -1,0 +1,39 @@
+Feature: The Board page
+
+    The board page where we can interact with the contents of a board
+
+
+    Scenario: As a user opening the board page
+        Given I navigate to the board page
+        Then I should see a board with 3 lists
+        And the first list should have 2 cards called 'Card 1' and 'Card 2'
+        And the second list should have 1 card called 'Card 3'
+        And the third list should be empty
+
+    Scenario: As a user moving a card below another card in the same list
+        Given I have a list with 2 cards 'Card 1' and 'Card 2'
+        When I drag the card 'Card 1' below the card 'Card 2'
+        Then the cards should have swapped positions
+
+    Scenario: As a user moving a card above another card in the same list
+        Given I have a list with 2 cards 'Card 1' and 'Card 2'
+        When I drag the card 'Card 2' above the card 'Card 1'
+        Then the cards should have swapped positions
+
+    Scenario: As a user moving a card from one list above a card in another list
+        Given I have 2 lists, 'List 1' with 2 cards, 'Card 1', 'Card 2', and 'List 2' with 1 card 'Card 3'
+        When I drag the card 'Card 1' from 'List 1' above 'Card 3' in 'List 2'
+        Then 'List 1' should only contain 'Card 2'
+        And 'List 2' should have 'Card 1' and 'Card 3' in that order
+
+    Scenario: As a user moving a card from one list below a card in another list
+        Given I have 2 lists, 'List 1' with 2 cards, 'Card 1', 'Card 2', and 'List 2' with 1 card 'Card 3'
+        When I drag the card 'Card 1' from 'List 1' below 'Card 3' in 'List 2'
+        Then 'List 1' should only contain 'Card 2'
+        And 'List 2' should have 'Card 3' and 'Card 1' in that order
+
+    Scenario: As a user moving a card from one list to an empty list
+        Given I Have 2 lists, 'List 2' with 1 card, 'Card 3' and 'List 3' that is empty
+        When I drag the card 'Card 3' from 'List 1' to 'List 3'
+        Then 'List 2' should be empty
+        And 'List 3' should only contain 'Card 3'
