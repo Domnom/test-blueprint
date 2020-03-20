@@ -1,0 +1,38 @@
+        if (props.listsData)
+        {
+            /**
+             * @description First clean the listsData to ensure theres all required properties
+             */
+            listsDataOrdered = props.listsData.filter((listData: TListData) => {
+                return listData.id && listData.name && listData.position;
+            });
+            listsDataOrdered = listsDataOrdered.sort((listDataA: TListData, listDataB: TListData): number => {
+                return listDataA.position.localeCompare(listDataB.position);
+            })
+        }
+
+        return {
+            listsData : listsDataOrdered
+        }
+    }
+
+
+    constructor(props: TProperty)
+    {
+        super(props);
+
+        /**
+         * @description Initialising state. This is the only place we can do this.state. Everywhere else use this.setState.
+         *              Initialisation is required as we use getDerivedStateFromProps and it throws a warning if we do not do this step
+         */
+        this.state = {
+            listsData: []
+        }
+
+        /**
+         * @description We are binding this function to allow it access to this classes instance. An alternative to this
+         *              is to declare the function with fat arrow syntax
+         */
+        this.handleDragAndDropOnDragEnd = this.handleDragAndDropOnDragEnd.bind(this);
+    }
+
