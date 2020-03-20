@@ -1,0 +1,94 @@
+# Storybook
+
+## Install 
+### Install for React
+Install storybook for react. 
+
+```bash
+# ##########################
+#
+# @name Storybook 
+# @description install storybook for react
+#
+yarn add -D @storybook/react
+```
+
+
+
+### Install for Typescript 
+Install support for Typescript 
+
+```bash
+
+# ##########################
+#
+# @name Typescript
+# @description install storybook for Typescript 
+#
+yarn add -D @types/storybook__react
+yarn add -D awesome-typescript-loader
+yarn add -D react-docgen-typescript-loader
+
+```
+
+
+
+
+
+# Config 
+Lets create a `.storybook` folder in the root folder for our config 
+
+```bash
+mkdir .storybook
+touch .storybook/config.js 
+touch .storybook/webpack.config.js
+```
+
+## Config support for Typescript 
+We will use: 
+* `awesome-typescript-loader` - this transpiles `ts` and `tsx` into `javascript` for the browser.  
+* `react-docgen-typescript-loader` - Webpack loader to generate docgen information from Typescript React components.
+
+| Loader | Github | Description |
+| --- | --- | --- |
+| `awesome-typescript-loader` | [https://github.com/s-panferov/awesome-typescript-loader](https://github.com/s-panferov/awesome-typescript-loader) | this transpiles `ts` and `tsx` into `javascript` for the browser. |
+| `react-docgen-typescript-loader` | [https://github.com/strothj/react-docgen-typescript-loader](https://github.com/strothj/react-docgen-typescript-loader) |Webpack loader to generate docgen information from Typescript React components. |
+
+```js
+module.exports = ({ config }) => {
+    config.module.rules.push({
+        test: /\.(ts|tsx)$/,
+        use: [
+            {
+                loader: require.resolve('awesome-typescript-loader'),
+            },
+            /** 
+             * Optional
+             **/
+            {
+                loader: require.resolve('react-docgen-typescript-loader'),
+            },
+        ],
+    });
+    config.resolve.extensions.push('.ts', '.tsx');
+    return config;
+};
+
+```
+
+This takes the webpack config and extends it to include typescript rules. 
+
+`rules`
+* `rules` - this will `test` each file if it matches `.ts` or `.tsx`
+* If it matches then we will transpile the file through the `awesome-typescript-loader` 
+* Then is will transpile the file through `react-docgen-typescript-loader` 
+
+`resolve`
+* `extensions` - this enables us to leave off the extension from imports.
+* e.g. `import File from '../path/to/file';` it will match `file.ts` or `file.tsx` in that order 
+
+
+
+
+
+
