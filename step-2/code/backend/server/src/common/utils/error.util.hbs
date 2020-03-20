@@ -1,0 +1,151 @@
+/**
+ * @import Errors
+ */
+import { QueryFailedError } from "typeorm";
+import { ValidationError } from 'class-validator';
+
+/**
+ * @import Exceptions
+ */
+import { 
+    HttpException,
+    ImATeapotException,
+    InternalServerErrorException,
+    BadRequestException,
+    NotFoundException as NestJsNotFoundException
+} from "@nestjs/common"
+import { 
+    NotFoundException,
+    NotUniqueException,
+    ValidationException
+} from "../http/exceptions";
+
+/**
+ * @description Takes in any error and transforms it into a nest HttpException error
+ */
+export const errorTransformer = (err: any) => {
+    
+    // -- First return any exception overrides
+    if (err instanceof NestJsNotFoundException)
+    {
+        return new NotFoundException();
+    }
+
+
+    // -- Next return any error which are not caught that are already HttpExceptions
+    if (err instanceof HttpException)
+    {
+        return err;
+    }
+
+    let error: HttpException = new ImATeapotException("Short and stout, here is my error that wasnt found")
+    
+    // -- Split on array and non array errors
+    if (Array.isArray(err) && err.length > 0)
+    {
+        if (err[0] instanceof ValidationError)
+        {
+            error = validationErrorTransformer(err);
+        }   
+    }
+    else 
+    {
+        if (err instanceof QueryFailedError)
+        {
+            error = queryFailedErrorTransformer(err);
+        }
+    }
+
+    return error;
+}
+
+
+export const validationErrorTransformer = (validationErrors: ValidationError | ValidationError[]): HttpException => {
+
+    let errToReturn: HttpException = new InternalServerErrorException();
+
+    if (!Array.isArray(validationErrors))
+    {
+        validationErrors = [validationErrors];
+    }
+
+    if (validationErrors.length > 0)
+    {
+        let errorsToSet = validationErrors.map((validationError: ValidationError) => {
+            return {
+                property: validationError.property,
+                value : validationError.value,
+                constraints: validationError.constraints
+            }
+        })
+
+        errToReturn = new ValidationException(errorsToSet);
+    }
+
+    return errToReturn;
+
+}
+
+export const queryFailedErrorTransformer = (err: QueryFailedError): HttpException => {
+
+    let errToReturn: HttpException = new InternalServerErrorException();
+
+    if (err.hasOwnProperty('code'))
+    {
+        switch(err["code"])
+        {
+            case "23505": // -- unique_violation
+                
+                let duplicatePropertyErrors: { property: string, value: any}[] = [];
+
+                if (err["detail"])
+				{
+                    // -- We will need to get the first and last brackets as the values may contain brackets
+                    const openingBracketIndex: number = err["detail"].indexOf("(");
+                    const closingBracketIndex: number = err["detail"].lastIndexOf(")");
+
+                    if (openingBracketIndex >= 0 && closingBracketIndex >= 0)
+                    {
+                        let propertiesAndVals: string = err["detail"].substr(openingBracketIndex + 1, closingBracketIndex - (openingBracketIndex + 1));
+
+                        // -- We will now need to search for the string )=(
+                        const propertiesSplitFromValsIndex: number = propertiesAndVals.indexOf(")=(");
+
+						if (propertiesSplitFromValsIndex >= 0)
+                        {
+                            let propertyString: string = propertiesAndVals.substr(0, propertiesSplitFromValsIndex);
+                            let valsString: string = propertiesAndVals.substr(propertiesSplitFromValsIndex + 3);
+
+                            // -- We need to clean the property string as some props have "" pre-wrapped
+                            propertyString = propertyString.replace(/"/g, "");
+
+                            // -- Split the properties to arrays
+                            let propertiesArray = propertyString.split(", ");
+
+                            // -- We will now need to get the values that map to these properties
+                            let valsArray = valsString.split(", ");
+
+                            duplicatePropertyErrors = propertiesArray.map((property: string, propertyI: number): { property: string, value: any} => {
+                                let propertyVal = null;
+                                if (valsArray[propertyI] != undefined)
+                                {
+                                    propertyVal = valsArray[propertyI];
+                                }
+                                
+                                return {
+                                    property: property,
+                                    value: propertyVal
+                                }
+                            })
+                        }
+                    }
+                }
+                errToReturn = new NotUniqueException(duplicatePropertyErrors);
+                break;
+            default:
+                // -- Do nothing here
+        }
+    }
+
+    return errToReturn;
+}
