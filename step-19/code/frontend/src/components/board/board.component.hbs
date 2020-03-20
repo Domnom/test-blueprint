@@ -1,0 +1,144 @@
+/** 
+ * @class Board
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { DragDropContext, Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
+
+{{partial_1}}/**
+ * @import Components
+ */
+import CardList from '../card-list/card-list.component';
+
+/**
+ * @import Styles
+ */
+import './board.styles.css';
+
+/**
+ * @import Types
+ */
+type TCardData = {
+    id: number;
+    name : string;
+}
+type TListData = {
+    id : number;
+{{partial_2}}    name : string;
+    cards : TCardData[]
+}
+
+/**
+ * @param {TProperty} TProperty 
+ */
+type TProperty = {
+    name : string;
+    listsData? : TListData[]
+}
+/**
+ * @param {TState} TState
+ */
+type TState = {
+{{partial_3}}}
+
+/**
+ * Board 
+ *
+ * @class Board
+ * @extends {React.Component<TProperty, TState>}
+ */
+class Board extends React.Component<TProperty, TState> {
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+        name : PropTypes.string.isRequired,
+        listsData : PropTypes.arrayOf(Object)
+    }
+{{partial_4}}
+{{partial_5}}    /**
+     * Render the Board 
+     *
+     * @returns {JSX} component 
+     * @memberof Board
+     */
+    render() {
+        let cardListComponents: JSX.Element[] = [];
+
+        /**
+         * @description We are checking to see if there are listsData to build cardListComponents
+         */
+{{partial_6}}        {
+            /**
+             * @description Using array functions, iterate over the listsData and return JSX.Elements
+             */
+{{partial_7}}                /**
+                 * @description Check if the required props for the CardList before creating
+                 */
+                if (listData.hasOwnProperty('id') && listData.hasOwnProperty('name'))
+                {
+                    return (
+                        <Draggable
+                            key={"list-" + listData.id}
+                            index={listDataIndex}
+{{partial_8}}                        >
+                            {(provided: DraggableProvided) => {
+                                return (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.dragHandleProps}
+                                        {...provided.draggableProps}
+                                    >
+                                        <CardList
+                                            listId={listData.id}
+                                            name={listData.name}
+                                            cardsData={listData.hasOwnProperty("cards") ? listData.cards : null}
+                                        />
+                                    </div>
+                                )
+                            }}    
+                        </Draggable>
+                    )
+                }
+            })
+        }
+
+
+        return (
+            <div className="boardComponent">
+                <div className="boardName">
+                    {this.props.name}
+                </div>
+{{partial_9}}                    <Droppable
+                        droppableId="board-id" 
+                        type="COLUMN" 
+                        direction="horizontal"
+                    >
+                        {(provided: DroppableProvided) => {
+                            // The data-testid is used by react-testing-library to find the container
+                            return (
+                                <div 
+                                    ref={provided.innerRef}
+                                    className="cardListContainer"
+                                    data-testid="board.cardListContainer"
+                                >
+                                    {cardListComponents}
+
+                                    {/* This will allow the other draggables to reposition themselves to allow a gap for the card we are dragging  */}
+                                    {provided.placeholder}
+                                </div>
+                            )
+                        }}
+                    </Droppable>
+                </DragDropContext>
+            </div>
+        );
+    }
+
+{{partial_10}}}
+
+export default Board;
