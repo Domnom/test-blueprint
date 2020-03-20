@@ -1,0 +1,47 @@
+/** 
+ * @class card BDD tests
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React from 'react';
+import { loadFeature, defineFeature } from 'jest-cucumber';
+import { render, RenderResult } from '@testing-library/react';
+
+/**
+ * @import Component
+ */
+import Card from './card.component';
+
+const feature = loadFeature('./src/components/card/card.feature');
+
+defineFeature(feature, test => {
+
+    let renderedComponent: RenderResult;
+
+    /**
+     * Before each test, re-create a render of the component
+     */
+    beforeEach(() => {
+{{partial_1}}    })
+
+    test("The card component is mounted", ({ given, when, then }) => {
+
+        given("I have a card", () => {
+            expect(renderedComponent).toBeDefined();
+        })
+
+        when("I look at it", () => {
+
+        })
+
+        then("I should see the card name", () => {
+            // -- Fetch the card name
+            const cardNameDiv: HTMLElement = renderedComponent.getByText(/card name placeholder/i);
+
+            expect(cardNameDiv).toBeDefined();
+        })
+
+    })
+
+})
