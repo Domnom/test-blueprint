@@ -1,0 +1,35 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+
+/**
+ * @import Libraries
+ */
+
+/**
+ * @import Pages
+ */
+{{partial_1}}
+
+
+const renderApp = () => {
+
+	ReactDOM.render((
+{{partial_2}}        </div>
+		), 
+		document.getElementById('root')
+    );
+    
+}
+
+
+
+
+const run = async () => {
+	
+	renderApp();
+
+}
+
+run()
+	.catch()
