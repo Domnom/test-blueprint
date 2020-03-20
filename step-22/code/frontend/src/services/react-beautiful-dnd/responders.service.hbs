@@ -1,0 +1,298 @@
+import { produce } from 'immer';
+import { generatePosition } from '../../common/utils/lexicographic.util';
+
+type TCardData = {
+    id : number;
+    name : string;
+    position : string;
+}
+type TListData = {
+    id : number;
+    name : string;
+    position : string;
+    cards : TCardData[];
+}
+
+const onDragEndHandler = (
+    draggableId : string,
+    source : { index: number, droppableId: string},
+    destination : { index: number, droppableId: string},
+    type : string,
+    listsData : any[],
+    cardListsByRef : { [droppableId: string] : any }
+): any[] => {
+
+    /**
+     * @description First we will clone the state property, listsData, so we can make changes on it without modifying the state version
+     */
+    return produce(listsData, (listsDataCloned) => {
+        
+        /**
+         * @description Split on the droppable type. We either be dealing with CardList(Column) or a Card(default)
+         */
+        if (type === "COLUMN")
+        {
+            /**
+             * @description Fetch the list data from listsDataCloned that we just dragged and dropped
+             */
+            let listDataDropped = listsDataCloned.find((listData: TListData): boolean => {
+                return ("list-" + listData.id) == draggableId;
+            })
+
+            /**
+             * @description Lets take different paths depending on the destination.index
+             */
+            if (destination.index === 0)
+            {
+                /**
+                 * @description We are dragging to the start. Get the original 0th position and generate a 
+                 *              string position that is smaller
+                 */
+                const listDataEnd = listsDataCloned[0];
+
+                /**
+                 * @description Ensuring that the listDataEnd exists before we access it
+                 */
+                if (listDataEnd)
+                {
+                    /**
+                     * @description Generate a position string that is smaller than the position of the listDataEnd
+                     */
+                    listDataDropped.position = generatePosition(null, listDataEnd.position);
+                }
+            }
+            else if (destination.index === listsDataCloned.length - 1)
+            {
+                /**
+                 * @description We are dragging the last position. Get the original last listData and
+                 *              generate a new string position that is larger
+                 */
+                const listDataStart = listsDataCloned[listsDataCloned.length - 1];
+
+                /**
+                 * @description Ensuring that the listDataStart exists before we access it
+                 */
+                if (listDataStart)
+                {
+                    /**
+                     * @description Generate a position string that is larger than the position of the listDataStart
+                     */
+                    listDataDropped.position = generatePosition(listDataStart.position, null);
+                }
+            }
+            else
+            {
+                let listDataStartIndex = destination.index - 1;
+                let listDataEndIndex = destination.index;
+                if (source.index <= listDataStartIndex)
+                {
+                    listDataStartIndex = destination.index;
+                    listDataEndIndex = destination.index + 1;
+                }
+                /**
+                 * @description We are dragging between 2 existing ListData. Lets fetch both the start and end
+                 */
+                const listDataStart = listsDataCloned[listDataStartIndex];
+                const listDataEnd = listsDataCloned[listDataEndIndex];
+
+                /**
+                 * @description Ensuring that the listDataStart and listDataEnd exists before we access it
+                 */
+                if (listDataStart && listDataEnd)
+                {
+                    /**
+                     * @description Generate a position string that is larger than the start position and smaller than the end position
+                     */
+                    listDataDropped.position = generatePosition(listDataStart.position, listDataEnd.position);
+                }
+            }
+
+            /**
+             * @description Finally re-sort the state as the static getDerivedStateFromProps will not fire for state changes
+             */
+            listsDataCloned = listsDataCloned.sort((listDataA: TListData, listDataB: TListData): number => {
+                return listDataA.position.localeCompare(listDataB.position);
+            });
+        }
+        else
+        {
+            /**
+             * @description Get the CardList refObject for the source CardList
+             */
+            const cardListSourceRef: React.RefObject<any> = cardListsByRef[source.droppableId];
+            let cardListSourceData: TListData = listsDataCloned.find((listData: TListData): boolean => {
+                return ("list-" + listData.id) == source.droppableId;
+            })
+
+            if (cardListSourceData && cardListSourceRef && cardListSourceRef.current)
+            {
+                /**
+                 * @description We will need to fetch the cards array from the CardList so we can modify it before saving it
+                 */
+                let cardsDataSource: TCardData[] = cardListSourceRef.current.orderedCardsData;
+
+                /**
+                 * @description Find the cardDataDropped from the cardsDataSource using the source original index position
+                 */
+                let cardDataDropped: TCardData = cardsDataSource[source.index];
+
+                /**
+                 * @description Ensure the cardDataDropped exists
+                 */
+                if (cardDataDropped)
+                {
+                    /**
+                     * @description Check if we are moving the card into a new card list or the same card list
+                     */
+                    if (source.droppableId != destination.droppableId)
+                    {
+                        /**
+                         * @description We are swapping to a different card list! First fetch the destination cardsList
+                         */
+                        const cardListDestinationRef: React.RefObject<any> = cardListsByRef[destination.droppableId];
+                        let cardListDestinationData: TListData = listsDataCloned.find((listData: TListData): boolean => {
+                            return ("list-" + listData.id) == destination.droppableId;
+                        })
+
+                        if (cardListDestinationData && cardListDestinationRef && cardListDestinationRef.current)
+                        {
+                            /**
+                             * @description Get the cardsData from the cardsListDestination
+                             */
+                            let cardsDataDestination: TCardData[] = cardListDestinationRef.current.orderedCardsData;
+
+                            /**
+                             * @description Remove the cardDataDropped from listDataSource
+                             */
+                            cardsDataSource.splice(source.index, 1);
+
+                            /**
+                             * @description Now lets add the cardDataDropped to the cardsDataDestination
+                             */
+                            if (cardsDataDestination.length === 0)
+                            {
+                                /**
+                                 * @description There are no cards in the destination! Lets just set the default position and add the card directly
+                                 */
+                                cardDataDropped.position = generatePosition();
+                            }
+                            else
+                            {
+                                if (destination.index === 0)
+                                {
+                                    /**
+                                     * @description We are dragging to the start. Get the original start card (we will call it cardDataEnd as it will follow after the new card)
+                                     */
+                                    const cardDataEnd: TCardData = cardsDataDestination[destination.index];
+
+                                    /**
+                                     * @description Generate a new position with this cardDataEnd as the end point
+                                     */
+                                    cardDataDropped.position = generatePosition(null, cardDataEnd.position);
+                                }
+                                else if (destination.index === cardsDataDestination.length)
+                                {
+                                    /**
+                                     * @description We are dragging to the end of the list. Get the last item and call it card start
+                                     */
+                                    const cardDataStart: TCardData = cardsDataDestination[destination.index - 1]
+
+                                    /**
+                                     * @description Generate a new position with this cardDataStart as the start point
+                                     */
+                                    cardDataDropped.position = generatePosition(cardDataStart.position);
+                                }
+                                else
+                                {
+                                    /**
+                                     * @description We are in the middle of 2 cards. Fetch the start and end cardData points
+                                     */
+                                    let cardDataStart: TCardData = cardsDataDestination[destination.index - 1];
+                                    let cardDataEnd: TCardData = cardsDataDestination[destination.index];
+
+                                    /**
+                                     * @description Generate a new position
+                                     */
+                                    cardDataDropped.position = generatePosition(cardDataStart.position, cardDataEnd.position);
+                                }
+                            }
+                            /**
+                             * @description Now add the cardDataDropped to the destination array. Sort is not needed as the child will take of this
+                             *              then override the original destinationList.cards with the cardsDataDestination array
+                             */
+                            cardsDataDestination.push(cardDataDropped);
+                            cardListDestinationData.cards = cardsDataDestination;
+                        }  
+                    }
+                    else
+                    {
+                        /**
+                         * @description The card is staying on the same list
+                         */
+                        if (destination.index === 0)
+                        {
+                            /**
+                             * @description We are dragging to the start. Get the original start card (we will call it cardDataEnd as it will follow after the new card)
+                             */
+                            const cardDataEnd: TCardData = cardsDataSource[destination.index];
+
+                            /**
+                             * @description Generate a new position with this cardDataEnd as the end point
+                             */
+                            cardDataDropped.position = generatePosition(null, cardDataEnd.position);
+                        }
+                        else if (destination.index === cardsDataSource.length - 1)
+                        {
+                            /**
+                             * @description We are dragging to the end of the list. Get the last item and call it card start
+                             */
+                            const cardDataStart: TCardData = cardsDataSource[destination.index];
+
+                            /**
+                             * @description Generate a new position with this cardDataStart as the start point
+                             */
+                            cardDataDropped.position = generatePosition(cardDataStart.position);
+                        }
+                        else
+                        {
+                            let cardDataStartIndex = destination.index - 1;
+                            let cardDataEndIndex = destination.index;
+                            if (source.index <= cardDataStartIndex)
+                            {
+                                cardDataStartIndex = destination.index;
+                                cardDataEndIndex = destination.index + 1;
+                            }
+                            
+                            /**
+                             * @description We are in the middle of 2 cards. Fetch the start and end cardData points
+                             */
+                            let cardDataStart: TCardData = cardsDataSource[cardDataStartIndex];
+                            let cardDataEnd: TCardData = cardsDataSource[cardDataEndIndex];
+
+                            /**
+                             * @description Generate a new position
+                             */
+                            cardDataDropped.position = generatePosition(cardDataStart.position, cardDataEnd.position);
+                        }
+                    }
+
+                    /**
+                     * Finally, lets override the original sourceCardList.cards array with the cardsDataSource array
+                     */
+                    cardListSourceData.cards = cardsDataSource;
+                }
+
+            }
+        }
+
+        /**
+         * @description Finally we save the state and let render do its thing
+         */
+        // return listsDataCloned;
+    });
+}
+
+
+export {
+    onDragEndHandler
+}
