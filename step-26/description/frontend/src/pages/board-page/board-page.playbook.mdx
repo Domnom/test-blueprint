@@ -1,0 +1,61 @@
+# Board page component (Scene for a visual component)
+
+
+### What we are working on
+We will be adding our first page to this app.  
+
+First we will need to modify the index.tsx file. This is the main file that will boot our app so 
+we will need to include the `board-page` component so we can see it.
+
+This page will be accessible by runnning the command:
+
+```
+yarn run start:dev
+```
+
+This should use the webpack-dev-server which will automatically open the app in your
+chosen browser or you can navigate to the default url of
+
+```
+http://localhost:8080
+```
+
+The app will use the `Board` component that we defined in the previous chapters and 
+it will be loaded with static list data we will define inside the `board-page` file
+
+Tests for this `board-page` will use a new library called `Cypress`.
+
+`Cypress` is used for testing e2e flows. Right now our `board-page` only utilizes the 
+basic abilities of the `Board` component but it will be useful when we add api requests to
+populate data or authorisation rules when reading and writing to the `Board`
+
+## Steps 
+### Wireframe/Design 
+* Design 
+*  
+
+### Component 
+#### Structure
+The board page should show a board component with card lists and some cards
+
+* Component
+    * `<Board>`
+
+
+***
+
+### Story 
+No stories will be added for this `board-page` right now. All components on this page
+should have their individual stories
+
+***
+
+### Unit Test
+
+***
+
+### BDD Test 
+BDD tests for this page will exist in the cypress folder:
+
+>Feature file: ./cypress/integration/pages/board-page.feature  
+>Test implementation: ./cypress/integraiton/pages/board-page/board-page.spec.ts
