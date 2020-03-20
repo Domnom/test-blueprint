@@ -1,0 +1,60 @@
+/** 
+ * @class Card
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+
+/**
+ * @requires Styles
+ */
+import './card.styles.css';
+
+
+/**
+ * @param {TProperty} TProperty 
+ */
+type TProperty = {
+{{partial_1}}}
+/**
+ * @param {TState} TState
+ */
+type TState = {
+
+}
+
+/**
+ * Card 
+ *
+ * @class Card
+ * @extends {React.Component<TProperty, TState>}
+ */
+class Card extends React.Component<TProperty, TState> {
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+{{partial_2}}    }
+
+    /**
+     * Render the Card 
+     *
+     * @returns  component 
+     * @memberof Card
+     */
+    render() {
+
+        return (
+            <div className="cardComponent">
+                <div className="cardName">
+{{partial_3}}                </div>
+            </div>
+        );
+    }
+
+}
+
+export default Card;
