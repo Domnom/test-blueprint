@@ -1,0 +1,8 @@
+         * @name CopyWebpackPlugin 
+         * @namespace plugins 
+         * @description Copy the css and image assets to the dist folder 
+         **/
+        new CopyWebpackPlugin([{
+            from: 'src/assets',
+            to: 'assets'
+        }]),
