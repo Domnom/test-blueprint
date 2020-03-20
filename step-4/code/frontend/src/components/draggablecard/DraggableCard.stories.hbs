@@ -1,0 +1,79 @@
+/** 
+ * @class DraggableCard Stories 
+ * @namespace stories 
+ * @description 
+ * @author Nick Mitchell
+ */
+
+import React from 'react';
+import { storiesOf } from '@storybook/react';
+import { withKnobs, text, boolean, number, object as objectAddOn, array as arrayAddOn, select, radios, optionsKnob, files, date, button as buttonAddOn } from '@storybook/addon-knobs';
+
+/**
+ * @name Component
+ * @requires import 
+ */
+import DraggableCard from './DraggableCard.component';
+
+
+/**
+ * @optional Decorator
+ * @param {String} categoryName - the tab name 
+ * @param {Function:JSX.Element} storyFn - story function that returns JSX Element 
+ */
+const ReduxDecorator = (storyFn) => {
+
+    const mockStore = {
+        hello: "world"
+    }
+
+    return (<section>
+        {storyFn()}
+    </section>)
+}
+
+/**
+ * Story Category
+ * @param {String} categoryName - the tab name 
+ * @param {NodeModule} module - no diea what this does? 
+ */
+const stories = storiesOf('Components/DraggableCard', module);
+
+/** 
+ * Stories 
+ * @name add 
+ * @param {string} storyName - story name which is the name of the tab 
+ * @param {Function:JSX.Element} fn - returns the react element 
+ */
+// stories
+//     .addDecorator(withKnobs) // <--- add knobs 
+//     .addDecorator(ReduxDecorator) // <--- this is optional 
+//     .add('DraggableCard', ()=>{
+        
+//         const defaultStyle = {
+//             id: "DraggableCard1",
+//             backgroundColor: "rgba(255,255,255,.8)",
+//             width: "250px",
+//             minHeight: "150px",
+//             marginTop: "30px"
+//         };
+//         const styleJson = objectAddOn('this.props.styles', defaultStyle, 'DraggableCard.styles');
+
+//         const defaultItem = {
+//             id: '1',
+//             firstName: 'Nick',
+//             lastName: 'Micthell',
+//             description: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero, banditos.',
+//         }
+//         const itemJson = objectAddOn('this.props.item', defaultItem, 'DraggableCard.item');
+        
+//         const css = require('../../assets/css/app.css');
+
+//         return (<DraggableCard style={styleJson} item={itemJson} />)
+//     },
+//     {
+//         notes: `#DraggableCard
+//             DraggableCard needs items and style overrides
+//         `
+//     })
+    
