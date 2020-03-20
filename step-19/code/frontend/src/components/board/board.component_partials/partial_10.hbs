@@ -1,0 +1,108 @@
+
+    /**
+     * Handler for DragDropContext. Fires when a draggable lands in a droppable zone.
+     * currently it handles CardList drops
+     *
+     * @param {string} draggableId
+     * @param {{droppableId: string, index: number}} source
+     * @param {{droppableId: string, index: number}} destination
+     * @param {string} type
+     * @memberof Board
+     */
+    handleDragAndDropOnDragEnd(
+        draggableId: string, 
+        source: {droppableId: string, index: number}, 
+        destination: {droppableId: string, index: number}, 
+        type: string) 
+    {
+        /**
+         * @description First we will clone the state property, listsData, so we can make changes on it without modifying the state version
+         */
+        let listsDataCloned = this.state.listsData;
+
+        /**
+         * @description Split on the droppable type. We either be dealing with CardList(Column) or a Card(default)
+         */
+        if (type === "COLUMN")
+        {
+            /**
+             * @description Fetch the list data from listsDataCloned that we just dragged and dropped
+             */
+            let listDataDropped = this.state.listsData.find((listData: TListData): boolean => {
+                return (listData.id + "") == draggableId;
+            })
+
+            /**
+             * @description Lets take different paths depending on the destination.index
+             */
+            if (destination.index === 0)
+            {
+                /**
+                 * @description We are dragging to the start. Get the original 0th position and generate a 
+                 *              string position that is smaller
+                 */
+                const listDataEnd = listsDataCloned[0];
+
+                /**
+                 * @description Ensuring that the listDataEnd exists before we access it
+                 */
+                if (listDataEnd)
+                {
+                    /**
+                     * @description Generate a position string that is smaller than the position of the listDataEnd
+                     */
+                    listDataDropped.position = generatePosition(null, listDataEnd.position);
+                }
+            }
+            else if (destination.index === listsDataCloned.length - 1)
+            {
+                /**
+                 * @description We are dragging the last position. Get the original last listData and
+                 *              generate a new string position that is larger
+                 */
+                const listDataStart = listsDataCloned[listsDataCloned.length - 1];
+
+                /**
+                 * @description Ensuring that the listDataStart exists before we access it
+                 */
+                if (listDataStart)
+                {
+                    /**
+                     * @description Generate a position string that is larger than the position of the listDataStart
+                     */
+                    listDataDropped.position = generatePosition(listDataStart.position, null);
+                }
+            }
+            else
+            {
+                /**
+                 * @description We are dragging between 2 existing ListData. Lets fetch both the start and end
+                 */
+                const listDataStart = listsDataCloned[destination.index - 1];
+                const listDataEnd = listsDataCloned[destination.index];
+
+                /**
+                 * @description Ensuring that the listDataStart and listDataEnd exists before we access it
+                 */
+                if (listDataStart && listDataEnd)
+                {
+                    /**
+                     * @description Generate a position string that is larger than the start position and smaller than the end position
+                     */
+                    listDataDropped.position = generatePosition(listDataStart.position, listDataEnd.position);
+                }
+            }
+        }
+        else
+        {
+
+        }
+
+        /**
+         * @description Finally we save the state and let render do its thing
+         */
+        this.setState({
+            listsData : listsDataCloned
+        })
+    }
+
