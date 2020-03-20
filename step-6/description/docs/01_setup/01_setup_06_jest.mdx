@@ -1,0 +1,175 @@
+# Jest
+
+TDD and BDD 
+
+## Steps
+
+### Dependencies - Test Runner
+A test runner will give us the code to write and run tests.
+Different test runners are used based on the support on a given framework or even
+syntactical personal preference
+#### Jest
+* jest
+* ts-jest
+* @types/jest
+#### Config
+* jest.config.js
+
+
+### Dependencies - Frontend (react)
+
+#### React testing library
+* @testing-library/react
+* @testing-library/jest-dom
+#### BDD
+* jest-cucumber
+
+
+### Dependencies - Backend
+#### Nestjs
+* @nestjs/testing
+
+***
+
+### Cucumber  
+BDD is different to TDD as we will use BDD to handle all things about what we do 
+and what we should see if we were to interact with a visual object/view (so its mostly useful for the frontend)  
+
+We are using jest-cucumber to run BDD tests.
+
+>Jest = Test Runner  
+>Cucumber = Test structure
+
+Cucumber uses gherkin syntax to define the structure of our tests.  
+We should always have a **<component_name\>.feature** file for every component we define 
+and have the following structure of:
+
+```
+// card.feature
+
+Feature: Card Component         // -- What we will be testing
+
+    This is the card component      // -- Description of this feature
+
+    Scenario: The card component is mounted // -- Define the situation we would expect to be in
+        Given I have a card                 // -- The current state we are in
+        When I look at it                   // -- What we want to do
+        Then I should see the card name     // -- What we expect to happen
+```
+
+jest-cucumber will be used to define the test content (fill in the test structure defined by *.feature) 
+have it saved to the file: **<component_name\>.bdd.tsx**  
+jest-cucumber extends the test runner capabilities to support 
+* defineFeature - Uses the feature name you defined in the **.feature** file
+* test with { given, when, then} - the **test** function is a build in jest function but now we are given the 
+gherkin states of **given, when and then**.
+* given - Handle the **given** portion of the *.feature structure
+* when - Handle the **when** portion of the *.feature structure
+* then - Handle the **then** portion of the *.feature structure
+```js
+// card.bdd.tsx
+import { loadFeature, defineFeature } from 'jest-cucumber'; // -- Importing required functions
+
+const feature = loadFeature('./src/components/card/card.feature'); // -- Loading the feature structure we defined previously. 
+                                                                   //    This will require a path from the root dir of this project
+
+/**
+ * Define the feature we set in the *.feature file
+ */
+defineFeature(feature, test => {
+
+    beforeEach(() => {
+        // -- Do things before we run each of these test blocks
+    });
+
+    /**
+     * Test each scenario and map the given, when and then from the 
+     * feature file to its definition
+     */
+    test("The card component is mounted", ({ given, when, then }) => {
+
+        given("I have a card", () => {
+            // -- Run any functions to reach the given state (e.g enabling edit on an input box)
+        })
+
+        when("I look at it", () => {
+            // -- Fire any events or do something to the given object (e.g changing the input of an input box)
+        })
+
+        then("I should see the card name", () => {
+            // -- Check the view or internal objects for the expected change (e.g a text update on the screen)
+            expect(true).toBeTruthy();
+        })
+
+    })
+
+})
+```
+***
+
+### Test Strategy
+#### Frontend (React) - BDD
+##### Components
+1. Create a **<component_name\>.feature** file in the directory of the component we are testing
+    * Define the feature (generally the name of the component)
+    * Create a scenario (start with the default state with the component being mounted to the screen)
+    * Given - describe the state the component should be in
+    * When - describe what we want to do
+    * Then - describe what we should see
+2. Create a **<component_name\>.bdd.tsx** file in the directory of the component we are testing
+    * Import required libraries as per example
+    * Import the <component_name\>.component.tsx
+    * Import and load feature file
+    * Define a test for each scenario that matches the name of the scenario in the <component_name\>.feature file
+    * Use a beforeEach function for each test to reset the state of the component or to reset any states
+    * Implement the given, when and then functions and test using jest function + any external testing libraries
+3. Implement the <component_name\>.component.tsx to pass the written tests
+4. From the project root folder, run **yarn run test**. This will use **jest** to run our .bdd test files
+5. If tests pass then persist code or continue the process from step 1.1
+
+#### Backend (NestJS) - TDD
+##### Entity
+1. Create a **<component_name\>.entity.spec.ts** in the directory of the component entity
+    * Create a root describe function for the entity
+    * Create 2 nested describe functions, one for create, one for update (this will be used for validation for different groups)
+    * **Create**
+        * Check if validation passes with required props
+        * Check if validation fails with missing required props
+        * Check if validation rules apply for each property (passing/failing validation). This sounds like a lot of extra 
+        work but this can spot holes in the implementation (e.g string lengths) that arn't validating for the create group
+    * **Update**
+        * Check if validation passes with no data
+        * Check if validation fails with invalid data
+2. Add the properties you're trying to validate from the **entity.spec.ts** to **<component_name\>.entity.ts**
+3. From the project root folder, run **yarn run test**. This will use **jest** to run our .spec test files
+
+##### Routes - _Use e2e tests to test the component routes_
+##### Controller - _Use e2e tests to test the component controller_
+##### Service - _Use e2e tests to test the component service_
+
+
+
+#### Unit Tests 
+xxx
+
+
+
+#### UI Tests 
+xxx
+
+
+
+#### Integration tests 
+xxx
+
+
+
+#### End to end tests (e2e tests) - backend (NestJS)
+xxx
+
+
+
+
+#### API/Supertest tests 
+xxx
+
