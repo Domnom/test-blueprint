@@ -1,0 +1,67 @@
+import React from 'react';
+
+import BoardComponent from '../../components/board/board.component';
+
+
+type TProperty = {
+
+}
+
+type TState = {
+
+}
+
+export default class BoardPage extends React.Component<TProperty, TState>
+{
+    render()
+    {
+        let listsData = [
+            {
+                id : 1,
+                name : "List 1",
+                position: 'n',
+                cards : [
+                    {
+                        id : 1,
+                        name : "Card 1",
+                        position : "n"
+                    },
+                    {
+                        id : 2,
+                        name : "Card 2",
+                        position : "o"
+                    }
+                ]
+            },
+            {
+                id : 2,
+                name : "List 2",
+                position : 'o',
+                cards : [
+                    {
+                        id : 3,
+                        name : "Card 3",
+                        position : "n"
+                    }
+                ]
+            },
+            {
+                id : 3,
+                name : "List 3",
+                position : 'p',
+                cards : [
+                ]
+            }
+        ]
+        return (
+            <div className="boardPage">
+                <BoardComponent
+                    name="My board"
+                    listsData={listsData}
+                >
+
+                </BoardComponent>
+            </div>
+        )
+    }
+}
