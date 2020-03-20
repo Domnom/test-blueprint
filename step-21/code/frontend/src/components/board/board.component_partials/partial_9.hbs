@@ -1,0 +1,3 @@
+            const cardListSourceRef: React.RefObject<any> = this.cardListRefsByDroppableId[source.droppableId];
+            let cardListSourceData: TListData = listsDataCloned.find((listData: TListData): boolean => {
+                return ("list-" + listData.id) == source.droppableId;
