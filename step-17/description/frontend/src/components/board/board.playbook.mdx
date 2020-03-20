@@ -1,0 +1,67 @@
+# board Component (Scene for a visual component)
+Holds a bunch of CardList components
+
+### What we are working on
+We will be converting the static values we have set on the board to be dynamic properties.
+This should include
+
+* Board name
+* listsData
+
+## Steps 
+### Wireframe/Design 
+* Design 
+*  
+
+### Component 
+#### Structure
+The board should contain a name and a container that can hold a bunch of card lists
+
+* Component
+    * Board name
+    * CardList container
+        * <card-list.component.tsx\>
+        * ...
+        * <card-list.component.tsx\>
+
+
+***
+
+### Story 
+We should have a single board component that has dynamic props which are editable using storybook knobs
+
+
+***
+
+### Unit Test
+* We will add a proptypes unit test to the Board component
+    * name
+    * listsData
+
+* The listsData prop should be an optional prop
+
+* The lists data should be an array that contains an object with the following keys
+    * name
+    * cards (array)
+        * id
+        * name
+
+* Test what we should render when the listsData that is passed in is
+    * Valid - Print the list to the screen
+    * Invalid - Skip the list with invalid data
+    * Mixed - Print valid and skip invalid
+    
+
+***
+
+### BDD Test 
+* When we load the Board to the screen,
+We will see the board name and
+We will see 2 card lists and
+Each list will have 2 cards each
+
+    Given I have a Board
+    When I look at it
+    Then I should see the name of the board
+    And I should see 2 card lists with the names of 'List 1' and 'List 2'
+    And 2 Cards on each list with the names of 'Card 1', 'Card 2', 'Card 3' and 'Card 4'
