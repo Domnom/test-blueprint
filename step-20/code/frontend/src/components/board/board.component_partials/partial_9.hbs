@@ -1,0 +1,7 @@
+            console.error("this is the stuff", {draggableId, source, destination, type})
+            /**
+             * @description Get the list data that the card originated from
+             */
+            let listDataSource: TListData = listsDataCloned.find((listData: TListData): boolean => {
+                return ("list-" + listData.id) === source.droppableId;
+            })
