@@ -1,0 +1,165 @@
+import {
+    generatePosition
+} from './lexicographic.util';
+import { generate } from 'rxjs';
+
+describe("Lexicographic Util", () => {
+
+    describe("generatePosition", () => {
+
+        let positionObjects: { [key: number] : { position: string } } = {
+        }
+
+        test ("Initialize a position if no initial position is given (ONE)", () => {
+
+            const position: string = generatePosition();
+
+            expect(position).toBe("n");
+
+            positionObjects[1] = {
+                position : position
+            }
+
+        })
+
+        test ("Generate before positions from ONE", () => {
+
+            // -- 2
+            const position2 = generatePosition(null, positionObjects[1].position);
+            expect(position2).toBe('g');
+
+            // -- 3
+            const position3 = generatePosition(null, position2);
+            expect(position3).toBe('d');
+
+            // -- 4
+            const position4 = generatePosition(null, position3);
+            expect(position4).toBe('b');
+
+            // -- 5
+            const position5 = generatePosition(null, position4);
+            expect(position5).toBe('an');
+
+            // -- 6
+            const position6 = generatePosition(null, position5);
+            expect(position6).toBe('ag')
+
+            // -- 7
+            const position7 = generatePosition(null, position6);
+            expect(position7).toBe('ad')
+
+            // -- 8
+            const position8 = generatePosition(null, position7);
+            expect(position8).toBe('ab')
+
+            // -- 9
+            const position9 = generatePosition(null, position8);
+            expect(position9).toBe('aan')
+
+            positionObjects = {
+                ...positionObjects,
+                2 : { position: position2 },
+                3 : { position: position3 },
+                4 : { position: position4 },
+                5 : { position: position5 },
+                6 : { position: position6 },
+                7 : { position: position7 },
+                8 : { position: position8 },
+                9 : { position: position9 }
+            }
+
+        })
+
+        test ("Generate after positions from ONE", () => {
+
+            // -- 10
+            const position10 = generatePosition(positionObjects[1].position);
+            expect(position10).toBe('t');
+
+            // -- 11
+            const position11 = generatePosition(position10,);
+            expect(position11).toBe('w');
+
+            // -- 12
+            const position12 = generatePosition(position11);
+            expect(position12).toBe('x');
+
+            // -- 13
+            const position13 = generatePosition(position12);
+            expect(position13).toBe('y');
+
+            // -- 14
+            const position14 = generatePosition(position13);
+            expect(position14).toBe('zn')
+
+            // -- 15
+            const position15 = generatePosition(position14);
+            expect(position15).toBe('zt')
+
+            // -- 16
+            const position16 = generatePosition(position15);
+            expect(position16).toBe('zw')
+
+            // -- 17
+            const position17 = generatePosition(position16);
+            expect(position17).toBe('zx')
+
+            positionObjects = {
+                ...positionObjects,
+                10 : { position: position10 },
+                11 : { position: position11 },
+                12 : { position: position12 },
+                13 : { position: position13 },
+                14 : { position: position14 },
+                15 : { position: position15 },
+                16 : { position: position16 },
+                17 : { position: position17 }
+            }
+
+        })
+
+
+        test ("Generate between positions", () => {
+
+            // -- 18 (1 - 10)
+            const position18 = generatePosition(positionObjects[1].position, positionObjects[10].position);
+            expect(position18).toBe("q");
+
+            // -- 19 (1 - 18)
+            const position19 = generatePosition(positionObjects[1].position, position18);
+            expect(position19).toBe('o')
+
+            // -- 20 (1 - 19)
+            const position20 = generatePosition(positionObjects[1].position, position19);
+            expect(position20).toBe('nn')
+
+            // -- 21 (1 - 20)
+            const position21 = generatePosition(positionObjects[1].position, position20);
+            expect(position21).toBe('ng');
+
+            // -- 22 (1 - 21)
+            const position22 = generatePosition('o', "nn");
+            expect(position22).toBe('nt');
+
+
+            positionObjects = {
+                ...positionObjects,
+                18 : { position: position18 },
+                19 : { position: position19 },
+                20 : { position: position20 },
+                21 : { position: position21 },
+                // 22 : { position: position22 }
+            }
+            
+            expect(generatePosition('j', 'nng')).toBe('l');
+            expect(generatePosition('mnfd', 'mngq')).toBe('mnfj');
+            expect(generatePosition('mnff', 'mnfg')).toBe('mnffn')
+            expect(generatePosition('n', 'nngd')).toBe('ng');
+            expect(generatePosition('cfi', 'bgh')).toBe('bghn');
+            expect(generatePosition('cfij', 'bghikr')).toBe('bghir');
+            expect(generatePosition('fng')).toBe('p')
+        })
+
+    })
+
+})
