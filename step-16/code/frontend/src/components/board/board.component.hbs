@@ -1,0 +1,100 @@
+/** 
+ * @class Board
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+
+/**
+ * @import Components
+ */
+import CardList from '../card-list/card-list.component';
+
+/**
+ * @import Styles
+ */
+import './board.styles.css';
+
+/**
+ * @param {TProperty} TProperty 
+ */
+type TProperty = {
+    
+}
+/**
+ * @param {TState} TState
+ */
+type TState = {
+
+}
+
+/**
+ * Board 
+ *
+ * @class Board
+ * @extends {React.Component<TProperty, TState>}
+ */
+class Board extends React.Component<TProperty, TState> {
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+        
+    }
+
+    /**
+     * Render the Board 
+     *
+     * @returns {JSX} component 
+     * @memberof Board
+     */
+    render() {
+
+        const cardList1CardsData = [
+            {
+                id: 1,
+                name : "Card 1"
+            },
+            {
+                id: 2,
+                name : "Card 2"
+            }
+        ]
+
+        const cardList2CardsData = [
+            {
+                id: 3,
+                name : "Card 3"
+            },
+            {
+                id: 4,
+                name : "Card 4"
+            }
+        ]
+
+        return (
+            <div className="boardComponent">
+                <div className="boardName">
+                    Board name placeholder
+                </div>
+                {/* Container will be used to setup the full size of the container */}
+                <div className="cardListContainer">
+                    <CardList
+                        name="List 1"
+                        cardsData={cardList1CardsData}
+                    />
+                    <CardList
+                        name="List 2"
+                        cardsData={cardList2CardsData}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+}
+
+export default Board;
