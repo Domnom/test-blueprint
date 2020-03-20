@@ -1,0 +1,74 @@
+/** 
+ * @class Board Stories 
+ * @namespace stories 
+ * @description 
+ * @author Playbook
+ */
+
+import React from 'react';
+import { storiesOf } from '@storybook/react';
+import { 
+    withKnobs, 
+    text as textAddon,
+    object as objectAddon
+} from '@storybook/addon-knobs';
+
+/**
+ * @name Component
+ * @requires import 
+ */
+import Board from './board.component';
+
+
+/**
+ * Story Category
+ * @param {String} categoryName - the tab name 
+ * @param {NodeModule} module - no diea what this does? 
+ */
+const stories = storiesOf('Components/Board', module)
+                    .addDecorator(withKnobs);
+
+/** 
+ * Stories 
+ * @name add 
+ * @param {string} storyName - story name which is the name of the tab 
+ * @param {Function:JSX.Element} fn - returns the react element 
+ */
+stories.add('component', ()=>{
+
+        let name = textAddon("name", "Board name");
+
+        let listsData = objectAddon("listsData", [
+            {
+{{partial_1}}                name: "List 1",
+                cards : [
+                    {
+                        id : 1,
+                        name : "Card 1"
+                    },
+                    {
+                        id : 2,
+                        name : "Card 2"
+                    }
+                ]
+            },
+            {
+{{partial_2}}                name: "List 2",
+                cards : [
+                    {
+                        id : 3,
+                        name : "Card 3"
+                    }
+                ]
+            }
+        ])
+
+        return (
+            <Board name={name} listsData={listsData}/>
+        )
+    },
+    {
+        notes: `#board
+            board needs items and style overrides
+        `
+    })
