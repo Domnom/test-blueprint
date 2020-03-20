@@ -1,0 +1,310 @@
+/** 
+ * @class Board
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React, { Fragment } from 'react';
+import PropTypes from 'prop-types';
+import { DragDropContext, Draggable, DraggableProvided, Droppable, DroppableProvided } from 'react-beautiful-dnd';
+
+import { generatePosition } from '../../common/utils/lexicographic.util'
+
+/**
+ * @import Components
+ */
+import CardList from '../card-list/card-list.component';
+
+/**
+ * @import Styles
+ */
+import './board.styles.css';
+{{partial_1}}
+/**
+ * @import Types
+ */
+type TCardData = {
+    id: number;
+{{partial_2}}    name : string;
+}
+type TListData = {
+    id : number;
+    position: string;
+    name : string;
+{{partial_3}}}
+
+/**
+ * @param {TProperty} TProperty 
+ */
+type TProperty = {
+    name : string;
+    listsData? : TListData[]
+}
+/**
+ * @param {TState} TState
+ */
+type TState = {
+    listsData? : TListData[] // -- This will contain the listsData but ordered by 'position'
+}
+
+/**
+ * Board 
+ *
+ * @class Board
+ * @extends {React.Component<TProperty, TState>}
+ */
+class Board extends React.Component<TProperty, TState> {
+
+    /**
+     * @param {PropTypes} propTypes - property types to check at run time 
+     */
+    static propTypes = {
+        name : PropTypes.string.isRequired,
+        listsData : PropTypes.arrayOf(Object)
+    }
+    
+    /**
+     * Everytime this.props changes, we can use the props to re-build this.state.
+     * This is a built in react static function and because it is static, we will not have access to any non-static class properties
+     * 
+     * We will be taking the listsData passed in by this.props and sorting it using string sorts to get order the listsData in ascending order.
+     * This will allow react-beautiful-rnd to print the lists in the correct order
+     *
+     * @static
+     * @param {TProperty} props
+     * @param {TState} state
+     * @returns
+     * @memberof Board
+     */
+    static getDerivedStateFromProps(props: TProperty, state: TState) {
+        let listsDataOrdered = [];
+
+        if (props.listsData)
+        {
+            /**
+             * @description First clean the listsData to ensure theres all required properties
+             */
+            listsDataOrdered = props.listsData.filter((listData: TListData) => {
+                return listData.id && listData.name && listData.position;
+            });
+{{partial_4}}            listsDataOrdered = listsDataOrdered.sort((listDataA: TListData, listDataB: TListData): number => {
+                return listDataA.position.localeCompare(listDataB.position);
+            })
+        }
+
+        return {
+            listsData : listsDataOrdered
+        }
+    }
+
+
+    constructor(props: TProperty)
+    {
+        super(props);
+
+        /**
+         * @description Initialising state. This is the only place we can do this.state. Everywhere else use this.setState.
+         *              Initialisation is required as we use getDerivedStateFromProps and it throws a warning if we do not do this step
+         */
+        this.state = {
+            listsData: []
+        }
+
+        /**
+         * @description We are binding this function to allow it access to this classes instance. An alternative to this
+         *              is to declare the function with fat arrow syntax
+         */
+        this.handleDragAndDropOnDragEnd = this.handleDragAndDropOnDragEnd.bind(this);
+    }
+
+    /**
+     * Render the Board 
+     *
+     * @returns {JSX} component 
+     * @memberof Board
+     */
+    render() {
+        let cardListComponents: JSX.Element[] = [];
+
+        /**
+         * @description We are checking to see if there are listsData to build cardListComponents
+         */
+        if (this.state.listsData)
+        {
+            /**
+             * @description Using array functions, iterate over the listsData and return JSX.Elements
+             */
+            cardListComponents = this.state.listsData.map((listData: TListData, listDataIndex: number) => {
+                /**
+                 * @description Check if the required props for the CardList before creating
+                 */
+                if (listData.hasOwnProperty('id') && listData.hasOwnProperty('name'))
+                {
+                    return (
+                        <Draggable
+                            key={"list-" + listData.id}
+                            index={listDataIndex}
+{{partial_5}}                        >
+                            {(provided: DraggableProvided) => {
+                                return (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.dragHandleProps}
+                                        {...provided.draggableProps}
+                                    >
+                                        <CardList
+                                            listId={listData.id}
+                                            name={listData.name}
+                                            cardsData={listData.hasOwnProperty("cards") ? listData.cards : null}
+                                        />
+                                    </div>
+                                )
+                            }}    
+                        </Draggable>
+                    )
+                }
+            })
+        }
+
+
+        return (
+            <div className="boardComponent">
+                <div className="boardName">
+                    {this.props.name}
+                </div>
+                <DragDropContext onDragEnd={ ({ draggableId, source, destination, type }) => { this.handleDragAndDropOnDragEnd(draggableId, source, destination, type) }}>
+                    <Droppable
+                        droppableId="board-id" 
+                        type="COLUMN" 
+                        direction="horizontal"
+                    >
+                        {(provided: DroppableProvided) => {
+                            // The data-testid is used by react-testing-library to find the container
+                            return (
+                                <div 
+                                    ref={provided.innerRef}
+                                    className="cardListContainer"
+                                    data-testid="board.cardListContainer"
+                                >
+                                    {cardListComponents}
+
+                                    {/* This will allow the other draggables to reposition themselves to allow a gap for the card we are dragging  */}
+                                    {provided.placeholder}
+                                </div>
+                            )
+                        }}
+                    </Droppable>
+                </DragDropContext>
+            </div>
+        );
+    }
+
+
+    /**
+     * Handler for DragDropContext. Fires when a draggable lands in a droppable zone.
+     * currently it handles CardList drops
+     *
+     * @param {string} draggableId
+     * @param {{droppableId: string, index: number}} source
+     * @param {{droppableId: string, index: number}} destination
+     * @param {string} type
+     * @memberof Board
+     */
+    handleDragAndDropOnDragEnd(
+        draggableId: string, 
+        source: {droppableId: string, index: number}, 
+        destination: {droppableId: string, index: number}, 
+        type: string) 
+    {
+        /**
+         * @description First we will clone the state property, listsData, so we can make changes on it without modifying the state version
+         */
+{{partial_6}}
+        /**
+         * @description Split on the droppable type. We either be dealing with CardList(Column) or a Card(default)
+         */
+        if (type === "COLUMN")
+        {
+            /**
+             * @description Fetch the list data from listsDataCloned that we just dragged and dropped
+             */
+            let listDataDropped = this.state.listsData.find((listData: TListData): boolean => {
+{{partial_7}}            })
+
+            /**
+             * @description Lets take different paths depending on the destination.index
+             */
+            if (destination.index === 0)
+            {
+                /**
+                 * @description We are dragging to the start. Get the original 0th position and generate a 
+                 *              string position that is smaller
+                 */
+                const listDataEnd = listsDataCloned[0];
+
+                /**
+                 * @description Ensuring that the listDataEnd exists before we access it
+                 */
+                if (listDataEnd)
+                {
+                    /**
+                     * @description Generate a position string that is smaller than the position of the listDataEnd
+                     */
+                    listDataDropped.position = generatePosition(null, listDataEnd.position);
+                }
+            }
+            else if (destination.index === listsDataCloned.length - 1)
+            {
+                /**
+                 * @description We are dragging the last position. Get the original last listData and
+                 *              generate a new string position that is larger
+                 */
+                const listDataStart = listsDataCloned[listsDataCloned.length - 1];
+
+                /**
+                 * @description Ensuring that the listDataStart exists before we access it
+                 */
+                if (listDataStart)
+                {
+                    /**
+                     * @description Generate a position string that is larger than the position of the listDataStart
+                     */
+                    listDataDropped.position = generatePosition(listDataStart.position, null);
+                }
+            }
+            else
+            {
+                /**
+                 * @description We are dragging between 2 existing ListData. Lets fetch both the start and end
+                 */
+                const listDataStart = listsDataCloned[destination.index - 1];
+                const listDataEnd = listsDataCloned[destination.index];
+
+                /**
+                 * @description Ensuring that the listDataStart and listDataEnd exists before we access it
+                 */
+                if (listDataStart && listDataEnd)
+                {
+                    /**
+                     * @description Generate a position string that is larger than the start position and smaller than the end position
+                     */
+                    listDataDropped.position = generatePosition(listDataStart.position, listDataEnd.position);
+                }
+            }
+{{partial_8}}        }
+        else
+        {
+{{partial_9}}
+{{partial_10}}        }
+
+        /**
+         * @description Finally we save the state and let render do its thing
+         */
+        this.setState({
+            listsData : listsDataCloned
+        })
+    }
+
+}
+
+export default Board;
