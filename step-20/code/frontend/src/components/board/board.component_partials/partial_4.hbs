@@ -1,0 +1,32 @@
+
+            /**
+             * @description We will also need to sort cards in each list
+             */
+            listsDataOrdered = listsDataOrdered.map((listData:TListData): TListData => {
+
+                if (listData.cards)
+                {
+                    /**
+                     * @description Iterate over the cards and filter out cards that do not have the correct properties
+                     */
+                    listData.cards = listData.cards.filter((cardData: TCardData) => {
+                        return cardData.id && cardData.name && cardData.position;
+                    })
+
+                    /**
+                     * @description Sort the positions of each card
+                     */
+                    listData.cards = listData.cards.sort((cardDataA: TCardData, cardDataB: TCardData): number => {
+                        if (cardDataA.position && cardDataB.position)
+                        {
+                            return cardDataA.position.localeCompare(cardDataB.position);
+                        }
+                        return -1;
+                    })
+                }
+
+                /**
+                 * @description Return the list with the card lists re-ordered (if cards exist for this list)
+                 */
+                return listData;
+            })
