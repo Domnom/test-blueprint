@@ -1,0 +1,139 @@
+/** 
+ * @class DraggableCard Container
+ * @namespace components 
+ * @description 
+ * @author Nick Mitchell
+ */
+import { DragSource } from 'react-dnd';
+import * as ReactDOM from 'react-dom';
+
+/**
+ * @name Components 
+ */
+import DraggableCard from './DraggableCard.component';
+
+/**
+ * @name dragSourceType 
+ * @description type: Required. Either a string, an ES6 symbol, or a function that returns either given the component's props. Only the drop targets registered for the same type will react to the items produced by this drag source. Read the overview to learn more about the items and types.
+ */
+const dragSourceType = 'card'; 
+
+/**
+ * @name dragSourceSpec 
+ * @description Required. A plain JavaScript object with a few allowed methods on it. It describes how the drag source reacts to the drag and drop events. See the drag source specification described in detail in the next section.
+ */
+const cardSource = {
+
+    /**
+     * beginDrag(props, monitor, component): Required. When the dragging starts, beginDrag is called. 
+     * You must return a plain JavaScript object describing the data being dragged. 
+     * What you return is the only information available to the drop targets about the drag source so it's important to pick the minimal data they need to know. 
+     * You may be tempted to put a reference to the componentinto it, but you should try very hard to avoid doing this because it couples the drag sources and drop targets. 
+     * It's a good idea to return something like { id: props.id }from this method.
+     *
+     * @param {*} props
+     * @param {*} monitor
+     * @param {*} component
+     * @returns
+     */
+    beginDrag(props, monitor, component: React.Component) {
+        // dispatch to redux store that drag is started
+        const { item, x, y } = props;
+        const { id, title } = item;
+        
+        
+        // const { clientWidth, clientHeight } = ReactDOM.findDOMNode(component);
+        const clientWidth = 100, clientHeight = 100;
+        
+        return { id, title, item, x, y, clientWidth, clientHeight };
+    },
+
+    /**
+     * endDrag(props, monitor, component): Optional. 
+     * When the dragging stops, endDragis called. 
+     * For every beginDragcall, a corresponding endDragcall is guaranteed. 
+     * You may call monitor.didDrop() to check whether or not the drop was handled by a compatible drop target. 
+     * If it was handled, and the drop target specified a drop result by returning a plain object from its drop() method, 
+     * it will be available as monitor.getDropResult(). 
+     *
+     * @param {*} props
+     * @param {*} monitor
+     */
+    endDrag(props, monitor) {
+        document.getElementById(monitor.getItem().id).style.display = 'block';
+        props.stopScrolling();
+    },
+
+    /**
+     * isDragging(props, monitor): Optional. 
+     * By default, only the drag source that initiated the drag operation is considered to be dragging. 
+     * You can override this behavior by defining a custom isDraggingmethod. 
+     * It might return something like props.id === monitor.getItem().id. 
+     * Do this if the original component may be unmounted during the dragging and later “resurrected” with a different parent. 
+     * For example, when moving a card across the lists in a Kanban board, you want it to retain the dragged appearance—even though technically, 
+     * the component gets unmounted and a different one gets mounted every time you move it to another list. 
+     * Note: You may not call monitor.isDragging() inside this method.
+     *
+     * @param {*} props
+     * @param {*} monitor
+     * @returns
+     */
+    isDragging(props, monitor) {
+        const isDragging = props.item && props.item.id === monitor.getItem().id;
+        return isDragging;
+    }
+
+} 
+
+/**
+ * @name dragSourceCollect 
+ * @description Required. The collecting function. It should return a plain object of the props to inject into your component. It receives two parameters: connectand monitor. Read the overview for an introduction to the monitors, the connectors, and the collecting function. See the collecting function described in detail after the next section.
+ * Specifies which props to inject into your component.
+ * 
+ * @param {*} connectDragSource 
+ * @param {*} monitor 
+ * 
+ */
+const dragSourceCollect = function(connectDragSource, monitor){
+    
+    return {
+        connectDragSource: connectDragSource.dragSource(),
+        connectDragPreview: connectDragSource.dragPreview(),
+        isDragging: monitor.isDragging()
+    };
+
+}
+/**
+ * @name dragSourceOptions
+ * @description Optional. A plain object. If some of the props to your component are not scalar (that is, are not primitive values or functions), specifying a custom arePropsEqual(props, otherProps)function inside the optionsobject can improve the performance. Unless you have performance problems, don't worry about it.
+ */
+const dragSourceOptions = {
+
+    /**
+     * arePropsEqual can improve the performance. 
+     * Unless you have performance problems, don't worry about it.
+     * 
+     * @param props 
+     * @param otherProps 
+     */
+    arePropsEqual: function(props, otherProps) {
+        let isEqual = true;
+        if (props.item.id === otherProps.item.id &&
+            props.x === otherProps.x &&
+            props.y === otherProps.y
+        ) {
+            isEqual = true;
+        } else {
+            isEqual = false;
+        }
+        return isEqual;
+    }
+
+}
+
+export default DragSource(
+    dragSourceType, 
+    cardSource, 
+    dragSourceCollect, 
+    dragSourceOptions
+)(DraggableCard)
