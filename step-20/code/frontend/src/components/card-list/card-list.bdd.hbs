@@ -1,0 +1,66 @@
+/** 
+ * @class CardList BDD tests
+ * @namespace components 
+ * @description 
+ * @author Playbook
+ */
+import React from "react";
+import { loadFeature, defineFeature } from 'jest-cucumber'
+import { render, RenderResult } from "@testing-library/react";
+import { DragDropContext } from 'react-beautiful-dnd';
+
+{{partial_1}}const feature = loadFeature('./src/components/card-list/card-list.feature');
+
+/**
+ * @import Component
+ */
+import CardList from './card-list.component';
+
+defineFeature(feature, test => {
+
+    let renderedComponent: RenderResult;
+
+    test("The CardList is mounted to screen", ({given, when, then, and}) => {
+        
+        given("I have a CardList", () => {
+            const cardsData = [
+                {
+                    id: 1,
+{{partial_2}}                    name : "Card 1"
+                },
+                {
+                    id: 2,
+{{partial_3}}                    name : "Card 2"
+                }
+            ]
+
+            renderedComponent = render(
+                <DragDropContext onDragEnd={() => {}}>
+                    <CardList listId={1} name="Cardlist name placeholder" cardsData={cardsData}/>
+                </DragDropContext>
+            )
+            expect(renderedComponent).toBeDefined();
+        })
+        
+        when("I look at it", () => {
+
+        })
+
+        then("I should see the name of the list", () => {
+            const cardListNameDiv: HTMLElement = renderedComponent.getByText(/cardlist name placeholder/i);
+
+            expect(cardListNameDiv).toBeDefined();
+        })
+
+        and("I should see 2 cards with the names of 'Card 1' and 'Card 2'", () => {
+
+            const card1Div: HTMLElement = renderedComponent.getByText(/card 1/i);
+            const card2Div: HTMLElement = renderedComponent.getByText(/card 2/i);
+            
+            expect(card1Div).toBeDefined();
+            expect(card2Div).toBeDefined();
+        })
+
+    })
+
+})
