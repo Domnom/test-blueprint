@@ -1,0 +1,32 @@
+# Environments 
+
+
+
+## Overview 
+### 8.1. Environments 
+* Environment 
+    - `start:dev:local` - `NODE_ENV=local` no docker. This is the only start command that uses `.env` file. We use .env so we dont share secret stuff 
+    - `start:dev:docker` - `NODE_ENV=development` docker compose 
+    - `start:dev:k8s` - `NODE_ENV=development` kubernetes locally 
+    - `start:dev` - `NODE_ENV=development` points to `yarn run dev:docker`
+    - `start:prod` - `NODE_ENV=production` this is only used by `nginx` Docker conatiner in production. 
+    - `start` - this is only used by `nginx` Docker conatiner in production. Its an alias for `yarn run start:prod`
+* A word about setting `process.env.` strategy 
+    - Put this in the docs 
+    - First thing is your code is being shared so we dont want to share secret stuff in process.env 
+    - Steps 
+        - `NODE_ENV` must be set or crash the app on purpose. 
+        - `NODE_ENV=local` webpack should load `.env` using `dotenv` node package. Otherwsie use Docker and docker compose or kubernete or Cloud environment 
+        - Check required env settings set or crash the app and thow a cloud watch error (winston slack) 
+            - Create a util to check env required and read from env file if local 
+* Map environments to github 
+    - branches 
+        - `master` --> `qa` - thatss for e2e balck box testing - if you have a QA role on your team. Only job is to write e2e tests. 
+        - `release/uat` --> `uat` - optional for Beta testers - real users - customer advisory board 
+        - `release/production` --> `preprod` - smoke tests (light weight ui/api tests that read only)
+        - Manual `preprod` --> `production` using a button (in Jenkins - does cirlce have same thing - may have to create a webhook button) 
+* Picture of the environment in powerpoint and on a MDX page 
+    - add to `/docs/04_setup_cicd.mdx` and to the `readme.md`
+
+## Steps 
+### todo 
