@@ -1,0 +1,51 @@
+     * Generate a state for use in the next render.
+     * 
+     * We will use this to re-order the cardsData provided by props and save it to the state for render
+     * to read from
+     *
+     * @static
+     * @memberof CardList
+     */
+    static getDerivedStateFromProps (props: TProperty, state: TState)
+    {
+        let cardsDataOrdered = props.cardsData ? [...props.cardsData] : [];
+
+        /**
+         * @description Clean the cardsData first to ensure it contains the required props
+         */
+        cardsDataOrdered = cardsDataOrdered.filter((cardData: TCardData) => {
+            return cardData.id && cardData.name && cardData.position;
+        })
+
+        /**
+         * @description Sort the cleaned data by position
+         */
+        cardsDataOrdered = cardsDataOrdered.sort((cardDataA: TCardData, cardDataB: TCardData): number => {
+            return cardDataA.position.localeCompare(cardDataB.position);
+        })
+
+        /**
+         * @description Return the new state with the cardsDataOrdered
+         */
+        return {
+            cardsData: cardsDataOrdered
+        }
+    }
+
+    /**
+     * Constructor of the CardList. Useful to intialise state properties and bind any 
+     * instance functions with context
+     * 
+     * @param {TProperty} props
+     * @memberof CardList
+     */
+    constructor(props: TProperty)
+    {
+        super(props);
+
+        this.state = {
+            cardsData : []
+        }
+    }
+
+    /**
