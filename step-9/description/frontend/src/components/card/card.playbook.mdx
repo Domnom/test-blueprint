@@ -30,7 +30,14 @@ the content of the card name using storybook knobs
 *** 
 
 ### Unit Test 
-No unit tests are required right now
+We can now add unit tests to test the PropTypes of the component.
+We will do this by using a util function called 'checkProps' which will use the check-prop-types library
+to check if the data we are passing through validates with the propTypes static variable in the component
+
+1) Write TDD test and specify expected props. Pass in data and validate.
+2) Run tests. Expect the tests to fail as we have not defined the propTypes
+3) Open component and add required propTypes
+4) Re-run test and expect passing. If not review propTypes in the component and modify to pass tests
 
 ***
 
