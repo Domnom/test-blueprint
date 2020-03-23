@@ -1,0 +1,21 @@
+                        <Draggable
+                            key={"list-" + listData.id}
+                            index={listDataIndex}
+                            draggableId={"list-" + listData.id}
+                        >
+                            {(provided: DraggableProvided) => {
+                                return (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.dragHandleProps}
+                                        {...provided.draggableProps}
+                                    >
+                                        <CardList
+                                            listId={listData.id}
+                                            name={listData.name}
+                                            cardsData={listData.hasOwnProperty("cards") ? listData.cards : null}
+                                        />
+                                    </div>
+                                )
+                            }}    
+                        </Draggable>
