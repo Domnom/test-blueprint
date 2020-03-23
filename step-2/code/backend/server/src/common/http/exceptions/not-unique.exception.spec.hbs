@@ -1,0 +1,73 @@
+import {
+    NotUniqueException
+} from './not-unique.exception'
+
+describe("NotUniqueException", () => {
+
+    describe("Basic", () => {
+
+        it ("Should create a new exception with no error messages", () => {
+            const notUniqueException: NotUniqueException = new NotUniqueException();
+
+            expect(notUniqueException.getStatus()).toBe(422);
+            expect(notUniqueException.getResponse()).toEqual({
+                message : "Not Unique Error"
+            })
+        })
+
+    })
+
+    describe("Advanced", () => {
+        
+        it ("Should create a new exception given 1 error", () => {
+            const error = {
+                property: "name",
+                value: "John"
+            }
+
+            const notUniqueException = new NotUniqueException(error);
+
+            expect(notUniqueException.getResponse()).toEqual({
+                message : "Not Unique Error",
+                errors : [
+                    {
+                        ...error,
+                        message: "The value for the property 'name' is not unique"
+                    }
+                ]
+            })
+        });
+
+        it ("Should create a new exception given 2 errors", () => {
+            const errors = [
+                {
+                    property: "name",
+                    value: "John"
+                },
+                {
+                    property: "email",
+                    value: "john.doe@email.com"
+                    
+                }
+            ]
+
+            const notUniqueException = new NotUniqueException(errors);
+
+            expect(notUniqueException.getResponse()).toEqual({
+                message: "Not Unique Error",
+                errors : [
+                    {
+                        ...errors[0],
+                        message: "The value for the property 'name' is not unique"
+                    },
+                    {
+                        ...errors[1],
+                        message: "The value for the property 'email' is not unique"
+                    }
+                ]
+            })
+        });
+
+    })
+
+})
