@@ -1,0 +1,39 @@
+/** 
+ * @class Board Stories 
+ * @namespace stories 
+ * @description 
+ * @author Playbook
+ */
+
+import React from 'react';
+import { storiesOf } from '@storybook/react';
+{{partial_1}}
+/**
+ * @name Component
+ * @requires import 
+ */
+import Board from './board.component';
+
+
+/**
+ * Story Category
+ * @param {String} categoryName - the tab name 
+ * @param {NodeModule} module - no diea what this does? 
+ */
+{{partial_2}}
+/** 
+ * Stories 
+ * @name add 
+ * @param {string} storyName - story name which is the name of the tab 
+ * @param {Function:JSX.Element} fn - returns the react element 
+ */
+stories.add('component', ()=>{
+
+{{partial_3}}        return (
+{{partial_4}}        )
+    },
+    {
+        notes: `#board
+            board needs items and style overrides
+        `
+    })
