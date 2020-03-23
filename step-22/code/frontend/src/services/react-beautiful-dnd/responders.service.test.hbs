@@ -1,0 +1,684 @@
+import { onDragEndHandler } from './responders.service';
+import { generatePosition } from '../../common/utils/lexicographic.util';
+import * as _ from 'lodash';
+
+class FakeCardList {
+
+    private cardsData: any[];
+
+    constructor(cardsData)
+    {
+        this.cardsData = getSortedArray([...cardsData]);
+    }
+    get orderedCardsData()
+    {
+        return _.cloneDeep(this.cardsData);
+    }
+}
+
+const getSortedArray = (arrayToSort) => {
+    return arrayToSort.sort((obj1, obj2) => {
+        return obj1.position.localeCompare(obj2.position);
+    })
+}
+
+const searchArrayById = (arrayToSearch, id) => {
+    return arrayToSearch.find((item) => {
+        return item.id === id;
+    })
+}
+
+describe("Responders Service", () => {
+
+    describe("onDragEndHandler", () => {
+
+        // -- This is the list data that contains cardLists data and cards
+        let listsData: any[]; 
+
+        // -- This is the lists data but in order
+        let orderedListsData: any[];
+
+        // -- We will be faking the look and feel of a React.CreateRef object
+        let cardListsByRef: { [droppableId: string] : { current : FakeCardList }} = {};
+
+        beforeAll(() => {
+
+            var pos0 = generatePosition();
+            var pos1 = generatePosition(pos0);
+            var pos2 = generatePosition(pos1);
+
+            /**
+             * @description This is the highest level of raw data. This will be passed as a prop and should NEVER be mutated
+             * @ListPosition 1 -> 2
+             *               2 -> 0
+             *               3 -> 1
+             * 
+             */
+            listsData = [
+                {
+                    id : 1,
+                    position: pos2,
+                    /**
+                     * @CardPosition 1 -> 0
+                     *               2 -> 2
+                     *               3 -> 1
+                     */
+                    cards : [
+                        {
+                            id : 1,
+                            position : pos0
+                        },
+                        {
+                            id : 2,
+                            position : pos2
+                        },
+                        {
+                            id : 3,
+                            position : pos1
+                        }
+                    ]
+                },
+                {
+                    id : 2,
+                    position: pos0,
+                    cards : [
+                    ]
+                },
+                {
+                    id : 3,
+                    position: pos1,
+                    /**
+                     * @CardPosition 4 -> 0
+                     */
+                    cards : [
+                        {
+                            id : 4,
+                            position : pos0
+                        }
+                    ]
+                }
+            ]
+
+            /**
+             * @description Using spread to shallow copy the listsData for orderig. This is the data we will use to send to the handler.
+             *              Note. This is a shallow copy so any cards modification will directly alter the listsData so we will still need to test this later
+             */
+            orderedListsData = getSortedArray([...listsData]);
+
+            /**
+             * @description Create the FakeCardLists that will take in a card list and save a shallow clone in order. 
+             *              We will use these fakeCardLists to ensure the data has not been modified
+             */
+            for (let i = 0; i < orderedListsData.length; i++)
+            {
+                const orderedListData = orderedListsData[i];
+                cardListsByRef["list-" + orderedListData.id] = {
+                    current : new FakeCardList(orderedListData.cards)
+                }
+            }
+        })
+
+        /**
+         * @description For all the following tests, we will need to replicate the data created for onDragEnd 
+         *              draggableId: string, 
+         *              source: { index: number, droppableId: string}, 
+         *              destination: { index: number, droppableId: string}, 
+         *              type : string
+         */
+        test("Moving a card to the start of a card list", () => {
+
+            const sourceList = searchArrayById(orderedListsData, 1);
+            const sourceFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const sourceCard = sourceFakeCardList.current.orderedCardsData[1];
+            const endCard = sourceFakeCardList.current.orderedCardsData[0]; // -- This will be the card that ends up being after the sourceCard
+            const draggableId = "card-" + sourceCard.id;
+            const source = {
+                index : 1,
+                droppableId : "list-" + sourceList.id
+            }
+            const destination = {
+                index : 0,
+                droppableId : "list-" + sourceList.id
+            }
+            const type = "DEFAULT";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newDestinationListUpdated = searchArrayById(newListData, sourceList.id)
+            const newDestinationCardUpdated = searchArrayById(newDestinationListUpdated.cards, sourceCard.id);
+
+            expect(newDestinationCardUpdated.position).toEqual(generatePosition(null, endCard.position));
+            
+            // -- Lets check FakeCardList's cardsData to ensure its unchanged
+            const destinationFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const destinationCardData = searchArrayById(destinationFakeCardList.current.orderedCardsData, sourceCard.id);
+
+            expect(destinationCardData.position).not.toEqual(newDestinationCardUpdated.position);
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataDestinationList = searchArrayById(listsData, sourceList.id);
+            const listDataDestinationCard = searchArrayById(listDataDestinationList.cards, sourceCard.id);
+            
+            expect(listDataDestinationCard.position).not.toEqual(newDestinationCardUpdated.position);
+        });
+
+        test("Moving a card to the end of a card list", () => {
+
+            const sourceList = searchArrayById(orderedListsData, 1);
+            const sourceFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const sourceCard = sourceFakeCardList.current.orderedCardsData[1];
+            const startCard = sourceFakeCardList.current.orderedCardsData[2]; // -- This will be the card that ends up being after the sourceCard
+            const draggableId = "card-" + sourceCard.id;
+            const source = {
+                index : 1,
+                droppableId : "list-" + sourceList.id
+            }
+            const destination = {
+                index : 2,
+                droppableId : "list-" + sourceList.id
+            }
+            const type = "DEFAULT";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newDestinationListUpdated = searchArrayById(newListData, sourceList.id)
+            const newDestinationCardUpdated = searchArrayById(newDestinationListUpdated.cards, sourceCard.id);
+
+            expect(newDestinationCardUpdated.position).toEqual(generatePosition(startCard.position));
+            
+            // -- Lets check FakeCardList's cardsData to ensure its unchanged
+            const destinationFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const destinationCardData = searchArrayById(destinationFakeCardList.current.orderedCardsData, sourceCard.id);
+
+            expect(destinationCardData.position).not.toEqual(newDestinationCardUpdated.position);
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataDestinationList = searchArrayById(listsData, sourceList.id);
+            const listDataDestinationCard = searchArrayById(listDataDestinationList.cards, sourceCard.id);
+            
+            expect(listDataDestinationCard.position).not.toEqual(newDestinationCardUpdated.position);
+
+        });
+
+        test("Moving the last card between 2 cards", () => {
+            const sourceList = searchArrayById(orderedListsData, 1);
+            const sourceFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const sourceCard = sourceFakeCardList.current.orderedCardsData[2];
+            const startCard = sourceFakeCardList.current.orderedCardsData[0]; // -- This will be the card that ends up being after the sourceCard
+            const endCard = sourceFakeCardList.current.orderedCardsData[1];
+            const draggableId = "card-" + sourceCard.id;
+            const source = {
+                index : 2,
+                droppableId : "list-" + sourceList.id
+            }
+            const destination = {
+                index : 1,
+                droppableId : "list-" + sourceList.id
+            }
+            const type = "DEFAULT";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newDestinationListUpdated = searchArrayById(newListData, sourceList.id)
+            const newDestinationCardUpdated = searchArrayById(newDestinationListUpdated.cards, sourceCard.id);
+
+            expect(newDestinationCardUpdated.position).toEqual(generatePosition(startCard.position, endCard.position));
+            
+            // -- Lets check FakeCardList's cardsData to ensure its unchanged
+            const destinationFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const destinationCardData = searchArrayById(destinationFakeCardList.current.orderedCardsData, sourceCard.id);
+
+            expect(destinationCardData.position).not.toEqual(newDestinationCardUpdated.position);
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataDestinationList = searchArrayById(listsData, sourceList.id);
+            const listDataDestinationCard = searchArrayById(listDataDestinationList.cards, sourceCard.id);
+            
+            expect(listDataDestinationCard.position).not.toEqual(newDestinationCardUpdated.position);
+
+        });
+
+        test("Moving the first card between 2 cards", () => {
+            const sourceList = searchArrayById(orderedListsData, 1);
+            const sourceFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const sourceCard = sourceFakeCardList.current.orderedCardsData[0];
+            const startCard = sourceFakeCardList.current.orderedCardsData[1]; // -- This will be the card that ends up being after the sourceCard
+            const endCard = sourceFakeCardList.current.orderedCardsData[2];
+            const draggableId = "card-" + sourceCard.id;
+            const source = {
+                index : 0,
+                droppableId : "list-" + sourceList.id
+            }
+            const destination = {
+                index : 1,
+                droppableId : "list-" + sourceList.id
+            }
+            const type = "DEFAULT";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newDestinationListUpdated = searchArrayById(newListData, sourceList.id)
+            const newDestinationCardUpdated = searchArrayById(newDestinationListUpdated.cards, sourceCard.id);
+
+            expect(newDestinationCardUpdated.position).toEqual(generatePosition(startCard.position, endCard.position));
+            
+            // -- Lets check FakeCardList's cardsData to ensure its unchanged
+            const destinationFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const destinationCardData = searchArrayById(destinationFakeCardList.current.orderedCardsData, sourceCard.id);
+
+            expect(destinationCardData.position).not.toEqual(newDestinationCardUpdated.position);
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataDestinationList = searchArrayById(listsData, sourceList.id);
+            const listDataDestinationCard = searchArrayById(listDataDestinationList.cards, sourceCard.id);
+            
+            expect(listDataDestinationCard.position).not.toEqual(newDestinationCardUpdated.position);
+
+        });
+
+        test("Moving a card from one list to the start of another list", () => {
+
+            const sourceList = searchArrayById(orderedListsData, 1);
+            const sourceFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const sourceCard = sourceFakeCardList.current.orderedCardsData[1];
+            const destinationList = searchArrayById(orderedListsData, 3);
+            const destinationFakeCardList = cardListsByRef["list-" + destinationList.id]
+            const endCard = destinationFakeCardList.current.orderedCardsData[0];
+
+            const draggableId = "card-" + sourceCard.id;
+            const source = {
+                index : 1,
+                droppableId : "list-" + sourceList.id
+            }
+            const destination = {
+                index : 0,
+                droppableId : "list-" + destinationList.id
+            }
+            const type = "DEFAULT";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newSourceListUpdated = searchArrayById(newListData, sourceList.id);
+            const newSourceCardUpdated = searchArrayById(newSourceListUpdated.cards, sourceCard.id);
+            const newDestinationListUpdated = searchArrayById(newListData, destinationList.id)
+            const newDestinationCardUpdated = searchArrayById(newDestinationListUpdated.cards, sourceCard.id);
+
+            // -- The source should be deleted from the original source card list
+            expect(newSourceCardUpdated).toBeUndefined();
+            expect(newDestinationCardUpdated.position).toEqual(generatePosition(null, endCard.position));
+            
+            // -- Lets check FakeCardList's cardsData to ensure its unchanged
+            const sourceCardData = searchArrayById(sourceFakeCardList.current.orderedCardsData, sourceCard.id);
+            const destinationCardData = searchArrayById(destinationFakeCardList.current.orderedCardsData, sourceCard.id);
+
+            expect(sourceCardData).toBeDefined();
+            expect(destinationCardData).toBeUndefined();
+            expect(destinationFakeCardList.current.orderedCardsData).toHaveLength(1);
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataSourceList = searchArrayById(listsData, sourceList.id);
+            const listDataSourceCard = searchArrayById(listDataSourceList.cards, sourceCard.id);
+            const listDataDestinationList = searchArrayById(listsData, destinationList.id);
+            const listDataDestinationCard = searchArrayById(listDataDestinationList.cards, sourceCard.id);
+            
+            expect(listDataSourceCard.position).toBeDefined();
+            expect(listDataDestinationCard).toBeUndefined();
+            expect(listDataDestinationList.cards).toHaveLength(1);
+
+        });
+
+        test("Moving a card from one list to the end of another list", () => {
+            const sourceList = searchArrayById(orderedListsData, 1);
+            const sourceFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const sourceCard = sourceFakeCardList.current.orderedCardsData[1];
+            const destinationList = searchArrayById(orderedListsData, 3);
+            const destinationFakeCardList = cardListsByRef["list-" + destinationList.id]
+            const startCard = destinationFakeCardList.current.orderedCardsData[0];
+
+            const draggableId = "card-" + sourceCard.id;
+            const source = {
+                index : 1,
+                droppableId : "list-" + sourceList.id
+            }
+            const destination = {
+                index : 1,
+                droppableId : "list-" + destinationList.id
+            }
+            const type = "DEFAULT";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newSourceListUpdated = searchArrayById(newListData, sourceList.id);
+            const newSourceCardUpdated = searchArrayById(newSourceListUpdated.cards, sourceCard.id);
+            const newDestinationListUpdated = searchArrayById(newListData, destinationList.id)
+            const newDestinationCardUpdated = searchArrayById(newDestinationListUpdated.cards, sourceCard.id);
+
+            // -- The source should be deleted from the original source card list
+            expect(newSourceCardUpdated).toBeUndefined();
+            expect(newDestinationCardUpdated.position).toEqual(generatePosition(startCard.position));
+            
+            // -- Lets check FakeCardList's cardsData to ensure its unchanged
+            const sourceCardData = searchArrayById(sourceFakeCardList.current.orderedCardsData, sourceCard.id);
+            const destinationCardData = searchArrayById(destinationFakeCardList.current.orderedCardsData, sourceCard.id);
+
+            expect(sourceCardData).toBeDefined();
+            expect(destinationCardData).toBeUndefined();
+            expect(destinationFakeCardList.current.orderedCardsData).toHaveLength(1);
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataSourceList = searchArrayById(listsData, sourceList.id);
+            const listDataSourceCard = searchArrayById(listDataSourceList.cards, sourceCard.id);
+            const listDataDestinationList = searchArrayById(listsData, destinationList.id);
+            const listDataDestinationCard = searchArrayById(listDataDestinationList.cards, sourceCard.id);
+            
+            expect(listDataSourceCard.position).toBeDefined();
+            expect(listDataDestinationCard).toBeUndefined();
+            expect(listDataDestinationList.cards).toHaveLength(1);
+        });
+
+        test("Moving a card from one list between 2 cards of another list", () => {
+            const sourceList = searchArrayById(orderedListsData, 3);
+            const sourceFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const sourceCard = sourceFakeCardList.current.orderedCardsData[0];
+            const destinationList = searchArrayById(orderedListsData, 1);
+            const destinationFakeCardList = cardListsByRef["list-" + destinationList.id]
+            const startCard = destinationFakeCardList.current.orderedCardsData[0];
+            const endCard = destinationFakeCardList.current.orderedCardsData[1];
+
+            const draggableId = "card-" + sourceCard.id;
+            const source = {
+                index : 0,
+                droppableId : "list-" + sourceList.id
+            }
+            const destination = {
+                index : 1,
+                droppableId : "list-" + destinationList.id
+            }
+            const type = "DEFAULT";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newSourceListUpdated = searchArrayById(newListData, sourceList.id);
+            const newSourceCardUpdated = searchArrayById(newSourceListUpdated.cards, sourceCard.id);
+            const newDestinationListUpdated = searchArrayById(newListData, destinationList.id)
+            const newDestinationCardUpdated = searchArrayById(newDestinationListUpdated.cards, sourceCard.id);
+
+            // -- The source should be deleted from the original source card list
+            expect(newSourceCardUpdated).toBeUndefined();
+            expect(newDestinationCardUpdated.position).toEqual(generatePosition(startCard.position, endCard.position));
+            
+            // -- Lets check FakeCardList's cardsData to ensure its unchanged
+            const sourceCardData = searchArrayById(sourceFakeCardList.current.orderedCardsData, sourceCard.id);
+            const destinationCardData = searchArrayById(destinationFakeCardList.current.orderedCardsData, sourceCard.id);
+
+            expect(sourceCardData).toBeDefined();
+            expect(destinationCardData).toBeUndefined();
+            expect(destinationFakeCardList.current.orderedCardsData).toHaveLength(3);
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataSourceList = searchArrayById(listsData, sourceList.id);
+            const listDataSourceCard = searchArrayById(listDataSourceList.cards, sourceCard.id);
+            const listDataDestinationList = searchArrayById(listsData, destinationList.id);
+            const listDataDestinationCard = searchArrayById(listDataDestinationList.cards, sourceCard.id);
+            
+            expect(listDataSourceCard.position).toBeDefined();
+            expect(listDataDestinationCard).toBeUndefined();
+            expect(listDataDestinationList.cards).toHaveLength(3);
+        });
+
+        test("Moving a card from one list to another empty list", () => {
+
+            const sourceList = searchArrayById(orderedListsData, 3);
+            const sourceFakeCardList = cardListsByRef["list-" + sourceList.id];
+            const sourceCard = sourceFakeCardList.current.orderedCardsData[0];
+            const destinationList = searchArrayById(orderedListsData, 2);
+            const destinationFakeCardList = cardListsByRef["list-" + destinationList.id]
+
+            const draggableId = "card-" + sourceCard.id;
+            const source = {
+                index : 0,
+                droppableId : "list-" + sourceList.id
+            }
+            const destination = {
+                index : 0,
+                droppableId : "list-" + destinationList.id
+            }
+            const type = "DEFAULT";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newSourceListUpdated = searchArrayById(newListData, sourceList.id);
+            const newSourceCardUpdated = searchArrayById(newSourceListUpdated.cards, sourceCard.id);
+            const newDestinationListUpdated = searchArrayById(newListData, destinationList.id)
+            const newDestinationCardUpdated = searchArrayById(newDestinationListUpdated.cards, sourceCard.id);
+
+            // -- The source should be deleted from the original source card list
+            expect(newSourceCardUpdated).toBeUndefined();
+            expect(newDestinationCardUpdated.position).toEqual(generatePosition());
+            
+            // -- Lets check FakeCardList's cardsData to ensure its unchanged
+            const sourceCardData = searchArrayById(sourceFakeCardList.current.orderedCardsData, sourceCard.id);
+            const destinationCardData = searchArrayById(destinationFakeCardList.current.orderedCardsData, sourceCard.id);
+
+            expect(sourceCardData).toBeDefined();
+            expect(destinationCardData).toBeUndefined();
+            expect(destinationFakeCardList.current.orderedCardsData).toHaveLength(0);
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataSourceList = searchArrayById(listsData, sourceList.id);
+            const listDataSourceCard = searchArrayById(listDataSourceList.cards, sourceCard.id);
+            const listDataDestinationList = searchArrayById(listsData, destinationList.id);
+            const listDataDestinationCard = searchArrayById(listDataDestinationList.cards, sourceCard.id);
+            
+            expect(listDataSourceCard.position).toBeDefined();
+            expect(listDataDestinationCard).toBeUndefined();
+            expect(listDataDestinationList.cards).toHaveLength(0);
+
+        });
+
+        test("Moving a card list to the start of a board", () => {
+
+            const sourceList = orderedListsData[1];
+            const endList = orderedListsData[0];
+            const draggableId = "list-" + sourceList.id;
+            const source = {
+                index : 1,
+                droppableId : "board"
+            }
+            const destination = {
+                index : 0,
+                droppableId : "board"
+            }
+            const type = "COLUMN";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newSourceListUpdated = searchArrayById(newListData, sourceList.id);
+
+            expect(newSourceListUpdated.position).toEqual(generatePosition(null, endList.position));
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataSourceList = searchArrayById(listsData, sourceList.id);
+            
+            expect(listDataSourceList.position).not.toEqual(newSourceListUpdated.position);
+        });
+
+        test("Moving a card list to the end of a board", () => {
+            const sourceList = orderedListsData[1];
+            const startList = orderedListsData[2];
+            const draggableId = "list-" + sourceList.id;
+            const source = {
+                index : 1,
+                droppableId : "board"
+            }
+            const destination = {
+                index : 2,
+                droppableId : "board"
+            }
+            const type = "COLUMN";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newSourceListUpdated = searchArrayById(newListData, sourceList.id);
+
+            expect(newSourceListUpdated.position).toEqual(generatePosition(startList.position));
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataSourceList = searchArrayById(listsData, sourceList.id);
+            
+            expect(listDataSourceList.position).not.toEqual(newSourceListUpdated.position);
+        });
+
+        test("Moving the first card list between 2 card lists", () => {
+            const sourceList = orderedListsData[0];
+            const startList = orderedListsData[1];
+            const endList = orderedListsData[2];
+            const draggableId = "list-" + sourceList.id;
+            const source = {
+                index : 0,
+                droppableId : "board"
+            }
+            const destination = {
+                index : 1,
+                droppableId : "board"
+            }
+            const type = "COLUMN";
+            
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newSourceListUpdated = searchArrayById(newListData, sourceList.id);
+
+            expect(newSourceListUpdated.position).toEqual(generatePosition(startList.position, endList.position));
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataSourceList = searchArrayById(listsData, sourceList.id);
+            
+            expect(listDataSourceList.position).not.toEqual(newSourceListUpdated.position);
+        });
+
+        test("Moving the last card list between 2 card lists", () => {
+            const sourceList = orderedListsData[2];
+            const startList = orderedListsData[0];
+            const endList = orderedListsData[1];
+            const draggableId = "list-" + sourceList.id;
+            const source = {
+                index : 2,
+                droppableId : "board"
+            }
+            const destination = {
+                index : 1,
+                droppableId : "board"
+            }
+            const type = "COLUMN";
+
+            const newListData: any[] = onDragEndHandler(
+                draggableId,
+                source,
+                destination,
+                type,
+                orderedListsData,
+                cardListsByRef
+            )
+
+            // -- First we will need to make sure that the new list data contains the correct values
+            const newSourceListUpdated = searchArrayById(newListData, sourceList.id);
+
+            expect(newSourceListUpdated.position).toEqual(generatePosition(startList.position, endList.position));
+
+            // -- Now we need to ensure the listsData was not modified as it is required to be immutable
+            const listDataSourceList = searchArrayById(listsData, sourceList.id);
+            
+            expect(listDataSourceList.position).not.toEqual(newSourceListUpdated.position);
+        });
+
+    })
+
+})
