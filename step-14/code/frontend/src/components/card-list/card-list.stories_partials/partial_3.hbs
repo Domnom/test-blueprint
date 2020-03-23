@@ -1,0 +1,17 @@
+
+        let name = textAddon("name", "Card list");
+
+        let cardsData = objectAddon('cardsData', [
+            {
+                name: "Card 1"
+            },
+            {
+                name: "Card 2"
+            }
+        ]);
+
+
+        return (<CardList 
+                    name={name}
+                    cardsData={cardsData}
+                />)
