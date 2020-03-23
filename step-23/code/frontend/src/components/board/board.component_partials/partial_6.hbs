@@ -1,0 +1,8 @@
+            listsDataOrdered = listsDataOrdered.sort((listDataA: TListData, listDataB: TListData): number => {
+                return listDataA.position.localeCompare(listDataB.position);
+            })
+
+            return {
+                runGetDerivedState : true,
+                listsData : listsDataOrdered
+            }
