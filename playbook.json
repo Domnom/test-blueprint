@@ -1,0 +1,954 @@
+{
+    "categories": [
+        {
+            "id": 1,
+            "title": "TODO - Create a category name",
+            "scenes": [
+                {
+                    "id": 2,
+                    "title": "TODO - Create a scene name",
+                    "steps": [
+                        {
+                            "title": "step-01",
+                            "gitData": {},
+                            "windowSettings": {
+                                "description": {
+                                    "isClosed": false,
+                                    "top": "0px",
+                                    "left": "0px",
+                                    "width": "45%",
+                                    "height": "100%",
+                                    "transitions": []
+                                },
+                                "code": {
+                                    "isClosed": false,
+                                    "top": "0px",
+                                    "left": "50%",
+                                    "width": "45%",
+                                    "height": "80%",
+                                    "transitions": []
+                                },
+                                "cli": {
+                                    "isClosed": true,
+                                    "bottom": "0px",
+                                    "left": "50%",
+                                    "width": "45%",
+                                    "height": "20%",
+                                    "transitions": []
+                                }
+                            },
+                            "timeline": [
+                                {
+                                    "id": 1,
+                                    "panel": "description",
+                                    "start": 0,
+                                    "duration": 100,
+                                    "description": [
+                                        {
+                                            "tag": "h1",
+                                            "txt": "CarRental"
+                                        },
+                                        {
+                                            "tag": "p",
+                                            "txt": "Car rental management website based on php as a backend for univ web project"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "title": "trailing-commits",
+                            "gitData": {},
+                            "windowSettings": {
+                                "description": {
+                                    "isClosed": false,
+                                    "top": "0px",
+                                    "left": "0px",
+                                    "width": "45%",
+                                    "height": "100%",
+                                    "transitions": []
+                                },
+                                "code": {
+                                    "isClosed": false,
+                                    "top": "0px",
+                                    "left": "50%",
+                                    "width": "45%",
+                                    "height": "80%",
+                                    "transitions": []
+                                },
+                                "cli": {
+                                    "isClosed": true,
+                                    "bottom": "0px",
+                                    "left": "50%",
+                                    "width": "45%",
+                                    "height": "20%",
+                                    "transitions": []
+                                }
+                            },
+                            "timeline": [
+                                {
+                                    "id": 1,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/account.hbs",
+                                        "partial_sections": [],
+                                        "output": "account.php"
+                                    }
+                                },
+                                {
+                                    "id": 2,
+                                    "panel": "code",
+                                    "start": 200,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/book_car.hbs",
+                                        "partial_sections": [],
+                                        "output": "book_car.php"
+                                    }
+                                },
+                                {
+                                    "id": 3,
+                                    "panel": "code",
+                                    "start": 400,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/header.hbs",
+                                        "partial_sections": [],
+                                        "output": "header.php"
+                                    }
+                                },
+                                {
+                                    "id": 4,
+                                    "panel": "code",
+                                    "start": 500,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/index.hbs",
+                                        "partial_sections": [],
+                                        "output": "index.php"
+                                    }
+                                },
+                                {
+                                    "id": 5,
+                                    "panel": "code",
+                                    "start": 700,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/login.hbs",
+                                        "partial_sections": [],
+                                        "output": "login.php"
+                                    }
+                                },
+                                {
+                                    "id": 6,
+                                    "panel": "code",
+                                    "start": 900,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/message_admin.hbs",
+                                        "partial_sections": [],
+                                        "output": "message_admin.php"
+                                    }
+                                },
+                                {
+                                    "id": 7,
+                                    "panel": "code",
+                                    "start": 1100,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/pay.hbs",
+                                        "partial_sections": [],
+                                        "output": "pay.php"
+                                    }
+                                },
+                                {
+                                    "id": 8,
+                                    "panel": "code",
+                                    "start": 1300,
+                                    "duration": 300,
+                                    "code": {
+                                        "template": "trailing-commits/code/signup.hbs",
+                                        "partial_sections": [],
+                                        "output": "signup.php"
+                                    }
+                                },
+                                {
+                                    "id": 9,
+                                    "panel": "code",
+                                    "start": 1600,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/status.hbs",
+                                        "partial_sections": [],
+                                        "output": "status.php"
+                                    }
+                                },
+                                {
+                                    "id": 10,
+                                    "panel": "code",
+                                    "start": 1800,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/success.hbs",
+                                        "partial_sections": [],
+                                        "output": "success.php"
+                                    }
+                                },
+                                {
+                                    "id": 11,
+                                    "panel": "code",
+                                    "start": 1900,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/wait.hbs",
+                                        "partial_sections": [],
+                                        "output": "wait.php"
+                                    }
+                                },
+                                {
+                                    "id": 12,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 500,
+                                    "code": {
+                                        "template": "trailing-commits/code/css/main.hbs",
+                                        "partial_sections": [],
+                                        "output": "css/main.css"
+                                    }
+                                },
+                                {
+                                    "id": 13,
+                                    "panel": "code",
+                                    "start": 500,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/css/reset.hbs",
+                                        "partial_sections": [],
+                                        "output": "css/reset.css"
+                                    }
+                                },
+                                {
+                                    "id": 14,
+                                    "panel": "code",
+                                    "start": 600,
+                                    "duration": 700,
+                                    "code": {
+                                        "template": "trailing-commits/code/css/responsive.hbs",
+                                        "partial_sections": [],
+                                        "output": "css/responsive.css"
+                                    }
+                                },
+                                {
+                                    "id": 15,
+                                    "panel": "code",
+                                    "start": 1300,
+                                    "duration": 1000,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/lato-bold.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/lato-bold.eot"
+                                    }
+                                },
+                                {
+                                    "id": 16,
+                                    "panel": "code",
+                                    "start": 2300,
+                                    "duration": 8400,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/lato-bold.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/lato-bold.svg"
+                                    }
+                                },
+                                {
+                                    "id": 17,
+                                    "panel": "code",
+                                    "start": 10700,
+                                    "duration": 2000,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/lato-bold.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/lato-bold.ttf"
+                                    }
+                                },
+                                {
+                                    "id": 18,
+                                    "panel": "code",
+                                    "start": 12700,
+                                    "duration": 1100,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/lato-bold.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/lato-bold.woff"
+                                    }
+                                },
+                                {
+                                    "id": 19,
+                                    "panel": "code",
+                                    "start": 13800,
+                                    "duration": 900,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/lato-regular.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/lato-regular.eot"
+                                    }
+                                },
+                                {
+                                    "id": 20,
+                                    "panel": "code",
+                                    "start": 14700,
+                                    "duration": 8000,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/lato-regular.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/lato-regular.svg"
+                                    }
+                                },
+                                {
+                                    "id": 21,
+                                    "panel": "code",
+                                    "start": 22700,
+                                    "duration": 1900,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/lato-regular.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/lato-regular.ttf"
+                                    }
+                                },
+                                {
+                                    "id": 22,
+                                    "panel": "code",
+                                    "start": 24600,
+                                    "duration": 1100,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/lato-regular.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/lato-regular.woff"
+                                    }
+                                },
+                                {
+                                    "id": 23,
+                                    "panel": "code",
+                                    "start": 25700,
+                                    "duration": 1200,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/p22_corinthia.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/p22_corinthia.eot"
+                                    }
+                                },
+                                {
+                                    "id": 24,
+                                    "panel": "code",
+                                    "start": 26900,
+                                    "duration": 3700,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/p22_corinthia.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/p22_corinthia.svg"
+                                    }
+                                },
+                                {
+                                    "id": 25,
+                                    "panel": "code",
+                                    "start": 30600,
+                                    "duration": 2400,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/p22_corinthia.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/p22_corinthia.ttf"
+                                    }
+                                },
+                                {
+                                    "id": 26,
+                                    "panel": "code",
+                                    "start": 33000,
+                                    "duration": 1300,
+                                    "code": {
+                                        "template": "trailing-commits/code/fonts/p22_corinthia.hbs",
+                                        "partial_sections": [],
+                                        "output": "fonts/p22_corinthia.woff"
+                                    }
+                                },
+                                {
+                                    "id": 27,
+                                    "panel": "code",
+                                    "start": 34300,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/advanced_search_active.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/advanced_search_active.png"
+                                    }
+                                },
+                                {
+                                    "id": 28,
+                                    "panel": "code",
+                                    "start": 34400,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/advanced_search_hover.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/advanced_search_hover.png"
+                                    }
+                                },
+                                {
+                                    "id": 29,
+                                    "panel": "code",
+                                    "start": 34500,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/advanced_search_inactive.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/advanced_search_inactive.png"
+                                    }
+                                },
+                                {
+                                    "id": 30,
+                                    "panel": "code",
+                                    "start": 34600,
+                                    "duration": 13400,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/bg.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/bg.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 31,
+                                    "panel": "code",
+                                    "start": 48000,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/calendar_icon.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/calendar_icon.png"
+                                    }
+                                },
+                                {
+                                    "id": 32,
+                                    "panel": "code",
+                                    "start": 48100,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/close_menu_icon.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/close_menu_icon.png"
+                                    }
+                                },
+                                {
+                                    "id": 33,
+                                    "panel": "code",
+                                    "start": 48200,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/hamburger_icon.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/hamburger_icon.png"
+                                    }
+                                },
+                                {
+                                    "id": 34,
+                                    "panel": "code",
+                                    "start": 48300,
+                                    "duration": 11500,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/hero.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/hero.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 35,
+                                    "panel": "code",
+                                    "start": 59800,
+                                    "duration": 5600,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/hero_small.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/hero_small.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 36,
+                                    "panel": "code",
+                                    "start": 65400,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/logo.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/logo.png"
+                                    }
+                                },
+                                {
+                                    "id": 37,
+                                    "panel": "code",
+                                    "start": 65500,
+                                    "duration": 900,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/property_1.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/property_1.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 38,
+                                    "panel": "code",
+                                    "start": 66400,
+                                    "duration": 1100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/property_2.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/property_2.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 39,
+                                    "panel": "code",
+                                    "start": 67500,
+                                    "duration": 1500,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/property_3.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/property_3.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 40,
+                                    "panel": "code",
+                                    "start": 69000,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/search_arrow.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/search_arrow.png"
+                                    }
+                                },
+                                {
+                                    "id": 41,
+                                    "panel": "code",
+                                    "start": 69100,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/img/social_media.hbs",
+                                        "partial_sections": [],
+                                        "output": "img/social_media.png"
+                                    }
+                                },
+                                {
+                                    "id": 42,
+                                    "panel": "code",
+                                    "start": 69200,
+                                    "duration": 3300,
+                                    "code": {
+                                        "template": "trailing-commits/code/js/jquery.hbs",
+                                        "partial_sections": [],
+                                        "output": "js/jquery.js"
+                                    }
+                                },
+                                {
+                                    "id": 43,
+                                    "panel": "code",
+                                    "start": 72500,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/js/main.hbs",
+                                        "partial_sections": [],
+                                        "output": "js/main.js"
+                                    }
+                                },
+                                {
+                                    "id": 44,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/db/cars.hbs",
+                                        "partial_sections": [],
+                                        "output": "db/cars.sql"
+                                    }
+                                },
+                                {
+                                    "id": 45,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 19800,
+                                    "code": {
+                                        "template": "trailing-commits/code/cars/car1.hbs",
+                                        "partial_sections": [],
+                                        "output": "cars/car1.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 46,
+                                    "panel": "code",
+                                    "start": 19800,
+                                    "duration": 400,
+                                    "code": {
+                                        "template": "trailing-commits/code/cars/car2.hbs",
+                                        "partial_sections": [],
+                                        "output": "cars/car2.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 47,
+                                    "panel": "code",
+                                    "start": 20200,
+                                    "duration": 13400,
+                                    "code": {
+                                        "template": "trailing-commits/code/cars/car3.hbs",
+                                        "partial_sections": [],
+                                        "output": "cars/car3.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 48,
+                                    "panel": "code",
+                                    "start": 33600,
+                                    "duration": 300,
+                                    "code": {
+                                        "template": "trailing-commits/code/cars/images (2).hbs",
+                                        "partial_sections": [],
+                                        "output": "cars/images (2).jpg"
+                                    }
+                                },
+                                {
+                                    "id": 49,
+                                    "panel": "code",
+                                    "start": 33900,
+                                    "duration": 300,
+                                    "code": {
+                                        "template": "trailing-commits/code/cars/images (3).hbs",
+                                        "partial_sections": [],
+                                        "output": "cars/images (3).jpg"
+                                    }
+                                },
+                                {
+                                    "id": 50,
+                                    "panel": "code",
+                                    "start": 34200,
+                                    "duration": 900,
+                                    "code": {
+                                        "template": "trailing-commits/code/cars/job.hbs",
+                                        "partial_sections": [],
+                                        "output": "cars/job.jpeg"
+                                    }
+                                },
+                                {
+                                    "id": 51,
+                                    "panel": "code",
+                                    "start": 35100,
+                                    "duration": 27800,
+                                    "code": {
+                                        "template": "trailing-commits/code/cars/sonkort2.hbs",
+                                        "partial_sections": [],
+                                        "output": "cars/sonkort2.png"
+                                    }
+                                },
+                                {
+                                    "id": 52,
+                                    "panel": "code",
+                                    "start": 62900,
+                                    "duration": 1900,
+                                    "code": {
+                                        "template": "trailing-commits/code/cars/sonkortgold.hbs",
+                                        "partial_sections": [],
+                                        "output": "cars/sonkortgold.jpg"
+                                    }
+                                },
+                                {
+                                    "id": 53,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/includes/config.hbs",
+                                        "partial_sections": [],
+                                        "output": "includes/config.php"
+                                    }
+                                },
+                                {
+                                    "id": 54,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/add_cars.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/add_cars.php"
+                                    }
+                                },
+                                {
+                                    "id": 55,
+                                    "panel": "code",
+                                    "start": 200,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/add_vehicles.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/add_vehicles.php"
+                                    }
+                                },
+                                {
+                                    "id": 56,
+                                    "panel": "code",
+                                    "start": 400,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/approve.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/approve.php"
+                                    }
+                                },
+                                {
+                                    "id": 57,
+                                    "panel": "code",
+                                    "start": 500,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/client_requests.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/client_requests.php"
+                                    }
+                                },
+                                {
+                                    "id": 58,
+                                    "panel": "code",
+                                    "start": 700,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/delete.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/delete.php"
+                                    }
+                                },
+                                {
+                                    "id": 59,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/add-button.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/add-button.gif"
+                                    }
+                                },
+                                {
+                                    "id": 60,
+                                    "panel": "code",
+                                    "start": 100,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/button.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/button.gif"
+                                    }
+                                },
+                                {
+                                    "id": 61,
+                                    "panel": "code",
+                                    "start": 200,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/close.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/close.gif"
+                                    }
+                                },
+                                {
+                                    "id": 62,
+                                    "panel": "code",
+                                    "start": 300,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/del.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/del.gif"
+                                    }
+                                },
+                                {
+                                    "id": 63,
+                                    "panel": "code",
+                                    "start": 400,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/edit.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/edit.gif"
+                                    }
+                                },
+                                {
+                                    "id": 64,
+                                    "panel": "code",
+                                    "start": 500,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/footer.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/footer.gif"
+                                    }
+                                },
+                                {
+                                    "id": 65,
+                                    "panel": "code",
+                                    "start": 600,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/header.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/header.gif"
+                                    }
+                                },
+                                {
+                                    "id": 66,
+                                    "panel": "code",
+                                    "start": 700,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/msg-error.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/msg-error.gif"
+                                    }
+                                },
+                                {
+                                    "id": 67,
+                                    "panel": "code",
+                                    "start": 800,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/msg-ok.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/msg-ok.gif"
+                                    }
+                                },
+                                {
+                                    "id": 68,
+                                    "panel": "code",
+                                    "start": 900,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/pagging.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/pagging.gif"
+                                    }
+                                },
+                                {
+                                    "id": 69,
+                                    "panel": "code",
+                                    "start": 1000,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/tab.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/tab.gif"
+                                    }
+                                },
+                                {
+                                    "id": 70,
+                                    "panel": "code",
+                                    "start": 1100,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/images/th.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/images/th.gif"
+                                    }
+                                },
+                                {
+                                    "id": 71,
+                                    "panel": "code",
+                                    "start": 1200,
+                                    "duration": 300,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/css/style.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/css/style.css"
+                                    }
+                                },
+                                {
+                                    "id": 72,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/delete_car.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/delete_car.php"
+                                    }
+                                },
+                                {
+                                    "id": 73,
+                                    "panel": "code",
+                                    "start": 100,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/delete_msg.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/delete_msg.php"
+                                    }
+                                },
+                                {
+                                    "id": 74,
+                                    "panel": "code",
+                                    "start": 200,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/index.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/index.php"
+                                    }
+                                },
+                                {
+                                    "id": 75,
+                                    "panel": "code",
+                                    "start": 400,
+                                    "duration": 200,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/indexx.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/indexx.php"
+                                    }
+                                },
+                                {
+                                    "id": 76,
+                                    "panel": "code",
+                                    "start": 600,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/logout.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/logout.php"
+                                    }
+                                },
+                                {
+                                    "id": 77,
+                                    "panel": "code",
+                                    "start": 700,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/admin/menu.hbs",
+                                        "partial_sections": [],
+                                        "output": "admin/menu.php"
+                                    }
+                                },
+                                {
+                                    "id": 78,
+                                    "panel": "code",
+                                    "start": 0,
+                                    "duration": 100,
+                                    "code": {
+                                        "template": "trailing-commits/code/includes/config.hbs",
+                                        "partial_sections": [],
+                                        "output": "includes/config.php"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
