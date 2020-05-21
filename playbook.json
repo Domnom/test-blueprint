@@ -101,7 +101,8 @@
                                     "code": {
                                         "template": "step-02/code/Animal.schema.hbs",
                                         "partial_sections": [],
-                                        "output": "Animal.schema.ts"
+                                        "output": "Animal.schema.ts",
+                                        "this-shouldntbe-here": "tester"
                                     }
                                 },
                                 {
